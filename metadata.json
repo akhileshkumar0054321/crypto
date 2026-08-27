@@ -1,0 +1,6 @@
+{
+  "name": "CryptoVision",
+  "description": "Real-time cryptocurrency intelligence, live radar surveillance, DexScreener small-cap token profiling, ModernFinBERT sentiment classification, and institutional 6-section forensic audit reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
