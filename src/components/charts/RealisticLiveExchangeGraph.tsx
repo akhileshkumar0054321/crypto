@@ -675,6 +675,9 @@ export function RealisticLiveExchangeGraph({
     return `$${p.toFixed(8)}`;
   };
 
+  const rsiTop = mainChartHeight + (showVolume ? volumeHeight + 20 : 10);
+  const hx = hoveredCandleIndex !== null && hoveredCandleIndex < visibleCandles.length ? getX(hoveredCandleIndex) : 0;
+
   return (
     <div
       id="professional-candlestick-terminal"
@@ -1379,7 +1382,6 @@ export function RealisticLiveExchangeGraph({
           {/* ── RSI SUB-CHART ────────────────────────────────────────────── */}
           {showRSI && (
             <g id="rsi-subchart-group">
-              const rsiTop = mainChartHeight + (showVolume ? volumeHeight + 20 : 10);
               <line x1={15} y1={rsiTop} x2={width - 75} y2={rsiTop} stroke="#334155" strokeWidth={1} />
               <text x={20} y={rsiTop + 14} fill="#f43f5e" fontSize={9} fontFamily="monospace" fontWeight="bold">
                 RSI (14)
@@ -1431,7 +1433,6 @@ export function RealisticLiveExchangeGraph({
           {/* ── DYNAMIC CROSSHAIR WHEN HOVERING ──────────────────────────── */}
           {mousePos && hoveredCandleIndex !== null && hoveredCandleIndex < visibleCandles.length && (
             <g id="crosshair-group" pointerEvents="none">
-              const hx = getX(hoveredCandleIndex);
               {/* Vertical line */}
               <line x1={hx} y1={10} x2={hx} y2={totalSvgHeight - 20} stroke="#94a3b8" strokeWidth={1} strokeDasharray="3 3" opacity={0.7} />
               {/* Horizontal line */}

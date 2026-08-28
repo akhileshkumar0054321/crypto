@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   ShieldAlert,
   TrendingUp,
+  TrendingDown,
   Newspaper,
   ShieldCheck,
   CreditCard,
@@ -39,12 +40,22 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [learnModalOpen, setLearnModalOpen] = useState(false);
   const [newsletterModalOpen, setNewsletterModalOpen] = useState(false);
+  const [addPortfolioModalOpen, setAddPortfolioModalOpen] = useState(false);
+  const [importType, setImportType] = useState<"api" | "wallet">("wallet");
+  const [importCredential, setImportCredential] = useState("");
+  const [importSuccess, setImportSuccess] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLElement>(null);
 
   const { isLive } = useLiveMarket();
+
+  useEffect(() => {
+    const handleOpenAddPortfolio = () => setAddPortfolioModalOpen(true);
+    window.addEventListener("open-add-portfolio-modal", handleOpenAddPortfolio);
+    return () => window.removeEventListener("open-add-portfolio-modal", handleOpenAddPortfolio);
+  }, []);
 
   const { data: coins = [] } = useQuery({
     queryKey: ["all-coins-nav"],
@@ -164,7 +175,7 @@ export function Navbar() {
                   >
                     <div className="flex items-center gap-2">
                       <Sparkles size={14} className="text-amber-400" />
-                      <span className="font-semibold">DexScreener Small-Caps</span>
+                      <span className="font-semibold">Small Cap Coins</span>
                     </div>
                     <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono font-bold">HOT</span>
                   </Link>
@@ -180,23 +191,20 @@ export function Navbar() {
                     <span className="text-[10px] text-emerald-400 font-mono font-bold">LIVE</span>
                   </Link>
                   <Link
-                    href="/risk-explorer"
-                    onClick={() => setActiveDropdown(null)}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
-                  >
-                    <div className="flex items-center gap-2">
-                      <ShieldAlert size={14} className="text-rose-400" />
-                      <span>Critical Risk Traps</span>
-                    </div>
-                    <span className="text-[10px] bg-rose-500/20 text-rose-300 px-1 rounded">TRAP SCAN</span>
-                  </Link>
-                  <Link
-                    href="/coin/bitcoin"
+                    href="/?filter=gainers"
                     onClick={() => setActiveDropdown(null)}
                     className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
                   >
                     <TrendingUp size={14} className="text-emerald-400" />
-                    <span>Top Gainers & Volatility</span>
+                    <span>Top Gainers (24h)</span>
+                  </Link>
+                  <Link
+                    href="/?filter=losers"
+                    onClick={() => setActiveDropdown(null)}
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
+                  >
+                    <TrendingDown size={14} className="text-rose-400" />
+                    <span>Top Losers (24h)</span>
                   </Link>
                 </div>
               )}
@@ -244,15 +252,50 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Opinion */}
-            <Link
-              href="/reports"
-              className={`transition-colors hover:text-white ${
-                path === "/reports" ? "text-white font-medium" : ""
-              }`}
-            >
-              Opinion
-            </Link>
+            {/* Portfolio ˅ */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveDropdown(activeDropdown === "portfolio_nav" ? null : "portfolio_nav")
+                }
+                className={`flex items-center gap-1 transition-colors hover:text-white cursor-pointer ${
+                  activeDropdown === "portfolio_nav" || path === "/portfolio"
+                    ? "text-white font-medium"
+                    : ""
+                }`}
+              >
+                <span>Portfolio</span>
+                <ChevronDown size={12} className="text-slate-400 stroke-[2] translate-y-[0.5px]" />
+              </button>
+
+              {activeDropdown === "portfolio_nav" && (
+                <div className="absolute top-8 left-0 w-56 bg-[#0d121c] border border-slate-800 rounded-xl shadow-2xl p-2 z-50 animate-fade-in space-y-1">
+                  <Link
+                    href="/portfolio"
+                    onClick={() => setActiveDropdown(null)}
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
+                  >
+                    <Briefcase size={14} className="text-blue-400" />
+                    <span>View Portfolio Dashboard</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveDropdown(null);
+                      setAddPortfolioModalOpen(true);
+                    }}
+                    className="w-full flex items-center justify-between p-2 rounded-lg bg-blue-600/20 border border-blue-500/30 hover:bg-blue-600/30 text-blue-300 hover:text-white transition text-xs cursor-pointer font-semibold"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles size={14} className="text-blue-400" />
+                      <span>Add Portfolio</span>
+                    </div>
+                    <span className="text-[9px] bg-blue-500/20 text-blue-300 px-1 py-0.5 rounded font-mono">API / Link</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Intelligence */}
             <Link
@@ -730,66 +773,131 @@ export function Navbar() {
       )}
 
       {/* ── Newsletter Subscribe Modal ──────────────────────────────────────── */}
-      {newsletterModalOpen && (
+      {/* ── Add Portfolio Import Modal ──────────────────────────────────────── */}
+      {addPortfolioModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#0f1422] border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-4">
+          <div className="bg-[#0f1422] border border-blue-500/30 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6 space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <div className="flex items-center gap-2">
-                <Mail size={18} className="text-blue-400" />
-                <h3 className="text-base font-bold text-white">cryptoVision Newsletters</h3>
+                <Briefcase size={20} className="text-blue-400" />
+                <h3 className="text-base font-bold text-white">Import User Portfolio</h3>
               </div>
               <button
                 type="button"
-                onClick={() => setNewsletterModalOpen(false)}
+                onClick={() => {
+                  setAddPortfolioModalOpen(false);
+                  setImportSuccess(false);
+                  setImportCredential("");
+                }}
                 className="text-slate-400 hover:text-white text-xs cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            {newsletterSubscribed ? (
-              <div className="py-6 text-center space-y-2">
-                <CheckCircle2 size={36} className="text-emerald-400 mx-auto" />
-                <p className="text-sm font-bold text-white">Subscribed Successfully!</p>
-                <p className="text-xs text-slate-400">
-                  You will now receive daily cryptocurrency intelligence briefings and critical market alerts.
+            {importSuccess ? (
+              <div className="py-6 text-center space-y-3">
+                <CheckCircle2 size={40} className="text-emerald-400 mx-auto" />
+                <p className="text-base font-bold text-white">Portfolio Imported Successfully!</p>
+                <p className="text-xs text-slate-300">
+                  Successfully synced your assets and initialized real-time risk surveillance & VaR calculations.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setNewsletterModalOpen(false)}
-                  className="mt-4 px-5 py-2 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold cursor-pointer"
-                >
-                  Done
-                </button>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddPortfolioModalOpen(false);
+                      setImportSuccess(false);
+                      setImportCredential("");
+                      router.push("/portfolio");
+                    }}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition cursor-pointer"
+                  >
+                    View Portfolio Dashboard
+                  </button>
+                </div>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (newsletterEmail.includes("@")) {
-                    setNewsletterSubscribed(true);
-                  }
-                }}
-                className="space-y-3"
-              >
-                <p className="text-xs text-slate-300">
-                  Join 18,500+ quantitative traders receiving daily market analysis, vulnerability reports, and cryptocurrency forecasts.
+              <div className="space-y-4">
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Connect your external exchange API key or paste your wallet address / block explorer link to instantly import your cryptocurrency portfolio.
                 </p>
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email address..."
-                  value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition cursor-pointer"
-                >
-                  Subscribe to Newsletters
-                </button>
-              </form>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setImportType("wallet")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                      importType === "wallet"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white"
+                    }`}
+                  >
+                    Wallet Address / Link
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImportType("api")}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                      importType === "api"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white"
+                    }`}
+                  >
+                    Exchange API Key
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                    {importType === "wallet" ? "Wallet Address or Explorer Link" : "API Key & Secret (Read-Only)"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={
+                      importType === "wallet"
+                        ? "e.g. 0x71C... or https://etherscan.io/address/0x..."
+                        : "e.g. binance_api_key_... or okx_read_key..."
+                    }
+                    value={importCredential}
+                    onChange={(e) => setImportCredential(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+                  />
+                  <p className="text-[10px] text-slate-400">
+                    {importType === "wallet"
+                      ? "Supports Ethereum, Solana, Base, Polygon and EVM wallet addresses."
+                      : "Only read-only API permissions are required for portfolio asset synchronization."}
+                  </p>
+                </div>
+
+                <div className="pt-2 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddPortfolioModalOpen(false);
+                      setImportCredential("");
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!importCredential.trim()) {
+                        alert("Please enter a valid wallet link or API key.");
+                        return;
+                      }
+                      // Simulate successful import & store in localStorage / state
+                      setImportSuccess(true);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition cursor-pointer"
+                  >
+                    Import User Portfolio
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>

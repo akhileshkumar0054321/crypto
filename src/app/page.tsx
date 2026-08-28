@@ -47,12 +47,21 @@ export default function DashboardPage() {
   const router = useRouter();
   const [quickSearch, setQuickSearch] = useState("");
   const [tableFilterSearch, setTableFilterSearch] = useState("");
-  const [filterType, setFilterType] = useState<"all" | "l1" | "defi" | "ai" | "meme" | "safe" | "highrisk">("all");
+  const [filterType, setFilterType] = useState<"all" | "gainers" | "losers" | "smallcaps" | "l1" | "defi" | "ai" | "meme" | "safe" | "highrisk">("all");
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [selectedChartCoin, setSelectedChartCoin] = useState<any | null>(null);
   const [selectedAnalysisCoin, setSelectedAnalysisCoin] = useState<any | null>(null);
   const [radarSelectedCoinId, setRadarSelectedCoinId] = useState<string>("");
   const [displayCount, setDisplayCount] = useState<number>(50);
+
+  // Read URL filter query parameter on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const f = params.get("filter");
+    if (f === "gainers" || f === "losers" || f === "smallcaps") {
+      setFilterType(f as any);
+    }
+  }, []);
 
   const { isLive, globalStats, getLiveCoin } = useLiveMarket();
 
@@ -158,6 +167,12 @@ export default function DashboardPage() {
         cid === "worldcoin-wld" ||
         cid === "singularitynet";
 
+      const liveC = getLiveCoin(coin.coin_id, coin.price_usd || 100, coin.price_change_24h || 0);
+      const c24 = liveC.change24h ?? coin.price_change_24h ?? 0;
+
+      if (filterType === "gainers") return c24 > 0;
+      if (filterType === "losers") return c24 < 0;
+      if (filterType === "smallcaps") return (coin.market_cap_rank || 999) > 50 || isMeme;
       if (filterType === "l1") return isL1;
       if (filterType === "defi") return isDeFi;
       if (filterType === "ai") return isAI;
@@ -166,7 +181,7 @@ export default function DashboardPage() {
       if (filterType === "highrisk") return score >= 60;
       return true;
     });
-  }, [coins, leaderboard, tableFilterSearch, filterType]);
+  }, [coins, leaderboard, tableFilterSearch, filterType, getLiveCoin]);
 
   return (
     <div className="space-y-8 animate-fade-in pb-12 w-full" id="dashboard-page-container">
@@ -390,6 +405,9 @@ export default function DashboardPage() {
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
               {[
                 { id: "all", label: "All Assets" },
+                { id: "gainers", label: "Top Gainers (24h)" },
+                { id: "losers", label: "Top Losers (24h)" },
+                { id: "smallcaps", label: "Small Cap Coins" },
                 { id: "l1", label: "Layer 1 & 2" },
                 { id: "defi", label: "DeFi & Oracles" },
                 { id: "ai", label: "AI & Compute" },

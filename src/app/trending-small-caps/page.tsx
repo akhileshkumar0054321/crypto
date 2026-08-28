@@ -24,7 +24,7 @@ export default function TrendingSmallCapsPage() {
           </div>
 
           <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-            Trending Small Coins & Microcap Forensic Intelligence
+            Small Cap Coins & Microcap Forensic Intelligence
           </h1>
 
           <p className="text-sm text-slate-300 leading-relaxed">
