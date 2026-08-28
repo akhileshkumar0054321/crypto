@@ -90,7 +90,8 @@ const recBadge = (r?: string, viabilityScore = 50) => {
 };
 
 export default function CoinDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string }>();
+  const id = params?.id || "";
   const router = useRouter();
   const [timeframe, setTimeframe] = useState<number>(30);
   const [activeTab, setActiveTab] = useState<"overview" | "analysis" | "viability" | "tokenomics" | "trades" | "news" | "report">("overview");

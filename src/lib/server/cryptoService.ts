@@ -2612,7 +2612,7 @@ class DataStore {
     const basePrice = coin?.price_usd || 100;
     const now = Math.floor(Date.now() / 1000);
     const candleCount = days * 4;
-    const results = [];
+    const results: { time: number; open: number; high: number; low: number; close: number }[] = [];
 
     let price = basePrice * 0.95;
     for (let i = candleCount; i >= 0; i--) {

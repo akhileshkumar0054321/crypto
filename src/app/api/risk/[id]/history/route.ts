@@ -12,7 +12,7 @@ export async function GET(
   const currentScore = risk?.score || 50;
 
   const now = Date.now();
-  const history = [];
+  const history: any[] = [];
   for (let i = 14; i >= 0; i--) {
     const ts = new Date(now - i * 86400000).toISOString();
     const noise = (Math.sin(i * 0.9) * 6) + (Math.cos(i * 1.4) * 4);

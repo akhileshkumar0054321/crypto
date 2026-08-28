@@ -194,7 +194,7 @@ export async function GET(
       : 86400000;
 
   const now = Date.now();
-  const candles = [];
+  const candles: any[] = [];
   const baseVolPerBar = vol24h / (24 * 60);
 
   // Geometric Brownian motion with mean-reverting trend to match currentPrice & change24h
