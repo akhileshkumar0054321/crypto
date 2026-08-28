@@ -14,7 +14,7 @@ class DexScreenerService {
       const res = await fetch("https://api.dexscreener.com/token-profiles/latest/v1", {
         signal: controller.signal,
         headers: { Accept: "application/json" },
-        next: { revalidate: 30 },
+        cache: "no-store",
       });
       clearTimeout(timeoutId);
 
@@ -38,7 +38,7 @@ class DexScreenerService {
       const res = await fetch("https://api.dexscreener.com/token-boosts/top/v1", {
         signal: controller.signal,
         headers: { Accept: "application/json" },
-        next: { revalidate: 30 },
+        cache: "no-store",
       });
       clearTimeout(timeoutId);
 

@@ -107,6 +107,9 @@ export default function CoinDetailPage() {
   const [showFullPageChartModal, setShowFullPageChartModal] = useState(false);
   const [coinChartViewMode, setCoinChartViewMode] = useState<"tradingview" | "historical">("tradingview");
   const [coinTvInterval, setCoinTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
+  const [analysisTvInterval, setAnalysisTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
+  const [customTargetPriceInput, setCustomTargetPriceInput] = useState<string>("");
+  const [customInvestInput, setCustomInvestInput] = useState<string>("1000");
 
   // Live Market streaming hook
   const { getLiveCoin, isLive } = useLiveMarket();
@@ -173,6 +176,23 @@ export default function CoinDetailPage() {
     queryKey: ["coin-news-impact", id, activeHeadline],
     queryFn: () => coinApi.getNewsImpact(id, activeHeadline || undefined).then((r) => r.data).catch(() => null),
   });
+
+  const { data: fullAnalysis } = useQuery({
+    queryKey: ["coin-full-analysis-view", id, activeHeadline],
+    queryFn: async () => {
+      if (!id) return null;
+      const url = new URL(`/api/coins/${encodeURIComponent(id)}/full-analysis`, window.location.origin);
+      if (activeHeadline) {
+        url.searchParams.set("headline", activeHeadline);
+      }
+      const res = await fetch(url.toString());
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const simpleEnglishAnalysis = fullAnalysis?.simpleEnglishAnalysis;
 
   // Dynamic chart data incorporating the latest live tick price
   const chartData = useMemo(() => {
@@ -759,23 +779,33 @@ export default function CoinDetailPage() {
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-white/10">
-                  <Target size={22} style={{ color: badge.color }} />
+                <div className="p-2.5 rounded-xl bg-white/10">
+                  <Target size={24} style={{ color: badge.color }} />
                 </div>
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     INSTITUTIONAL QUANTITATIVE RECOMMENDATION
                   </span>
-                  <h3 className="text-xl font-extrabold text-slate-100 mt-0.5">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-slate-100 mt-0.5">
                     {badge.label}
                   </h3>
                 </div>
               </div>
-              <div className="text-left sm:text-right">
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded bg-black/40 text-slate-200">
-                  Confidence: 94.2%
-                </span>
-                <p className="text-[11px] text-slate-400 mt-1">Recommended Exposure: <strong className="text-slate-200">{badge.allocation}</strong></p>
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <button
+                  type="button"
+                  onClick={() => setShowSixSectionAudit(true)}
+                  className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/30 transition cursor-pointer"
+                >
+                  <Sparkles size={14} />
+                  <span>Launch 6-Section Forensic Dossier</span>
+                </button>
+                <div className="text-left sm:text-right">
+                  <span className="text-xs font-mono font-bold px-3 py-1 rounded bg-black/40 text-slate-200">
+                    Confidence: 94.2%
+                  </span>
+                  <p className="text-[11px] text-slate-400 mt-1">Recommended Exposure: <strong className="text-slate-200">{badge.allocation}</strong></p>
+                </div>
               </div>
             </div>
 
@@ -784,49 +814,335 @@ export default function CoinDetailPage() {
             </p>
           </div>
 
-          {/* Multi-Horizon Valuation Scenarios */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Bull Case */}
-            <div className="card border-emerald-500/30 bg-emerald-950/10 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Bull Scenario (Upside)</span>
-                <span className="text-xs font-mono text-emerald-400 font-bold">{scenarios?.bull_case_roi || "+140%"}</span>
+          {/* ── CryptoBERT (ElKulako/cryptobert) & Simple English Analysis Section ── */}
+          {simpleEnglishAnalysis && (
+            <div className="rounded-2xl bg-gradient-to-br from-purple-950/30 via-slate-900 to-slate-950 border border-purple-500/30 p-5 sm:p-6 space-y-4 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-purple-600/30 text-purple-200 border border-purple-400/40 flex items-center gap-1.5">
+                      <Sparkles size={13} className="text-purple-300" />
+                      CryptoBERT Model: ElKulako/cryptobert
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">HF Inference NLP Classifier</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white">
+                    {simpleEnglishAnalysis.plain_english_headline}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <span className={`text-xs font-extrabold px-3 py-1 rounded-lg border uppercase ${
+                      simpleEnglishAnalysis.verdict_badge?.includes("BUY") || simpleEnglishAnalysis.verdict_badge?.includes("BULLISH")
+                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                        : simpleEnglishAnalysis.verdict_badge?.includes("AVOID") || simpleEnglishAnalysis.verdict_badge?.includes("DANGER")
+                        ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
+                        : "bg-amber-500/20 border-amber-500/40 text-amber-300"
+                    }`}>
+                      {simpleEnglishAnalysis.verdict_badge || "HOLD"}
+                    </span>
+                    <span className="text-[10px] font-mono text-purple-300 mt-1 block">
+                      CryptoBERT Score: {simpleEnglishAnalysis.cryptobert_overall_sentiment_score}/100
+                    </span>
+                  </div>
+                </div>
               </div>
-              <p className="text-2xl font-extrabold font-mono text-slate-100">
-                ${scenarios?.bull_case_usd ? (scenarios.bull_case_usd >= 1 ? scenarios.bull_case_usd.toLocaleString() : scenarios.bull_case_usd.toFixed(6)) : "—"}
-              </p>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Requires sustained Layer-1 TVL expansion, ETF inflows, and macro liquidity ease.
-              </p>
+
+              {/* Confidence distribution bar */}
+              <div className="space-y-1.5 bg-slate-950/70 p-3 rounded-xl border border-purple-500/20">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <Activity size={13} className="text-purple-400" /> CryptoBERT Sentiment Confidence Distribution:
+                  </span>
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <span className="text-emerald-400 font-bold">🟢 Bullish: {simpleEnglishAnalysis.cryptobert_probabilities?.bullish}%</span>
+                    <span className="text-rose-400 font-bold">🔴 Bearish: {simpleEnglishAnalysis.cryptobert_probabilities?.bearish}%</span>
+                    <span className="text-amber-400 font-bold">🟡 Neutral: {simpleEnglishAnalysis.cryptobert_probabilities?.neutral}%</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden flex">
+                  <div style={{ width: `${simpleEnglishAnalysis.cryptobert_probabilities?.bullish || 33}%` }} className="bg-emerald-500 h-full" />
+                  <div style={{ width: `${simpleEnglishAnalysis.cryptobert_probabilities?.bearish || 33}%` }} className="bg-rose-500 h-full" />
+                  <div style={{ width: `${simpleEnglishAnalysis.cryptobert_probabilities?.neutral || 34}%` }} className="bg-amber-500 h-full" />
+                </div>
+              </div>
+
+              {/* 4-block everyday explanations */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <span className="text-[11px] uppercase font-bold text-blue-400 flex items-center gap-1.5">
+                    <Info size={13} /> What This Coin Actually Does (Everyday English)
+                  </span>
+                  <p className="text-slate-300 leading-relaxed">
+                    {simpleEnglishAnalysis.what_this_coin_does_for_beginners}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <span className="text-[11px] uppercase font-bold text-purple-400 flex items-center gap-1.5">
+                    <TrendingUp size={13} /> Market Reality (What is Happening Now)
+                  </span>
+                  <p className="text-slate-300 leading-relaxed">
+                    {simpleEnglishAnalysis.what_is_happening_right_now}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <span className="text-[11px] uppercase font-bold text-amber-400 flex items-center gap-1.5">
+                    <Users size={13} /> Whale Movements in Simple Words
+                  </span>
+                  <p className="text-slate-300 leading-relaxed">
+                    {simpleEnglishAnalysis.whale_and_smart_money_activity_simple}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <span className="text-[11px] uppercase font-bold text-cyan-400 flex items-center gap-1.5">
+                    <Code size={13} /> Team & Developer Reality Check
+                  </span>
+                  <p className="text-slate-300 leading-relaxed">
+                    {simpleEnglishAnalysis.developer_and_team_reality_check}
+                  </p>
+                </div>
+              </div>
+
+              {/* Actionable Playbook Banner */}
+              {simpleEnglishAnalysis.actionable_playbook && (
+                <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-2 text-purple-200">
+                    <Zap size={14} className="text-amber-400 shrink-0" />
+                    <span><strong>Golden Rule:</strong> {simpleEnglishAnalysis.actionable_playbook.golden_rule_for_this_coin}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowSixSectionAudit(true)}
+                    className="text-xs text-purple-300 hover:text-white font-bold underline flex items-center gap-1"
+                  >
+                    Open 6-Section Deep Breakdown →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── TradingView Pro Chart Embedded in Analysis ──────────────────── */}
+          <div className="card p-0 overflow-hidden bg-[#0a0e1a] border border-slate-800 rounded-2xl shadow-xl">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0c101d]">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-extrabold text-white">Technical Analysis Chart ({coin?.symbol?.toUpperCase() || id.toUpperCase()})</h3>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
+                    TradingView Live
+                  </span>
+                </div>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  Multi-timeframe candlestick analysis, volume footprint, trendline tools, and technical studies.
+                </p>
+              </div>
+
+              {/* Timeframe Selectors */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  {[
+                    { label: "1m", val: "1" },
+                    { label: "5m", val: "5" },
+                    { label: "15m", val: "15" },
+                    { label: "1H", val: "60" },
+                    { label: "4H", val: "240" },
+                    { label: "1D", val: "D" },
+                    { label: "1W", val: "W" },
+                  ].map((tf) => (
+                    <button
+                      key={tf.val}
+                      type="button"
+                      onClick={() => setAnalysisTvInterval(tf.val as any)}
+                      className={`px-2.5 py-1 text-xs font-mono font-bold rounded-lg transition cursor-pointer ${
+                        analysisTvInterval === tf.val
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {tf.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowFullPageChartModal(true)}
+                  className="p-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition cursor-pointer"
+                >
+                  <Maximize2 size={13} />
+                  <span>Expand</span>
+                </button>
+              </div>
             </div>
 
-            {/* Base Case */}
-            <div className="card border-blue-500/30 bg-blue-950/10 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">Base Case (6-12M Fair Value)</span>
-                <span className="text-xs font-mono text-blue-400 font-bold">{scenarios?.base_case_roi || "+35%"}</span>
+            <div className="w-full h-[500px] bg-[#0A0E1A]">
+              <TradingViewAdvancedWidget
+                symbol={coin?.symbol || id}
+                coinId={id}
+                coinName={coin?.name || id}
+                interval={analysisTvInterval}
+                height="500px"
+                width="100%"
+                allowSymbolChange={true}
+                hideSideToolbar={false}
+                hideTopToolbar={false}
+                hideLegend={false}
+                hideVolume={false}
+                theme="dark"
+                backgroundColor="#0A0E1A"
+              />
+            </div>
+          </div>
+
+          {/* Multi-Horizon Valuation Scenarios & Dynamic Price Simulator */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Bull Case */}
+              <div className="card border-emerald-500/30 bg-emerald-950/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Bull Scenario (Cycle Peak)</span>
+                  <span className="text-xs font-mono text-emerald-400 font-bold">{scenarios?.bull_case_roi || "+140%"}</span>
+                </div>
+                <p className="text-2xl font-extrabold font-mono text-slate-100">
+                  ${scenarios?.bull_case_usd ? (scenarios.bull_case_usd >= 1 ? scenarios.bull_case_usd.toLocaleString() : scenarios.bull_case_usd.toFixed(6)) : "—"}
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Requires sustained Layer-1 TVL expansion, institutional inflows, and macro liquidity easing.
+                </p>
               </div>
-              <p className="text-2xl font-extrabold font-mono text-slate-100">
-                ${scenarios?.base_case_usd ? (scenarios.base_case_usd >= 1 ? scenarios.base_case_usd.toLocaleString() : scenarios.base_case_usd.toFixed(6)) : "—"}
-              </p>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Aligned with organic network fee generation, staking yields, and active address velocity.
-              </p>
+
+              {/* Base Case */}
+              <div className="card border-blue-500/30 bg-blue-950/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">Base Case (6-12M Fair Value)</span>
+                  <span className="text-xs font-mono text-blue-400 font-bold">{scenarios?.base_case_roi || "+35%"}</span>
+                </div>
+                <p className="text-2xl font-extrabold font-mono text-slate-100">
+                  ${scenarios?.base_case_usd ? (scenarios.base_case_usd >= 1 ? scenarios.base_case_usd.toLocaleString() : scenarios.base_case_usd.toFixed(6)) : "—"}
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Aligned with organic network fee generation, staking yield equilibrium, and active address velocity.
+                </p>
+              </div>
+
+              {/* Bear Crash Floor */}
+              <div className="card border-rose-500/30 bg-rose-950/10 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Bear Crash Floor (Stress Test)</span>
+                  <span className="text-xs font-mono text-rose-400 font-bold">{scenarios?.bear_crash_drawdown || "-45%"}</span>
+                </div>
+                <p className="text-2xl font-extrabold font-mono text-slate-100">
+                  ${scenarios?.bear_crash_floor_usd ? (scenarios.bear_crash_floor_usd >= 1 ? scenarios.bear_crash_floor_usd.toLocaleString() : scenarios.bear_crash_floor_usd.toFixed(6)) : "—"}
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Maximum projected tail-risk drawdown during systemic market-wide deleveraging event.
+                </p>
+              </div>
             </div>
 
-            {/* Bear Crash Floor */}
-            <div className="card border-rose-500/30 bg-rose-950/10 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Bear Crash Floor (Stress Test)</span>
-                <span className="text-xs font-mono text-rose-400 font-bold">{scenarios?.bear_crash_drawdown || "-45%"}</span>
-              </div>
-              <p className="text-2xl font-extrabold font-mono text-slate-100">
-                ${scenarios?.bear_crash_floor_usd ? (scenarios.bear_crash_floor_usd >= 1 ? scenarios.bear_crash_floor_usd.toLocaleString() : scenarios.bear_crash_floor_usd.toFixed(6)) : "—"}
-              </p>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Maximum projected tail-risk drawdown during market-wide deleveraging event.
-              </p>
-            </div>
+            {/* Interactive Custom Price Target Calculator */}
+            {(() => {
+              const targetP = parseFloat(customTargetPriceInput) || (scenarios?.bull_case_usd || displayPrice * 1.5);
+              const investAmount = parseFloat(customInvestInput) || 1000;
+              const simRoiPct = displayPrice > 0 ? ((targetP - displayPrice) / displayPrice) * 100 : 0;
+              const simTotalValue = investAmount * (1 + simRoiPct / 100);
+              const simProfit = simTotalValue - investAmount;
+              const isProfit = simProfit >= 0;
+
+              return (
+                <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4 shadow-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div>
+                      <h4 className="text-sm font-extrabold text-slate-100 flex items-center gap-2">
+                        <Activity size={15} className="text-blue-400" />
+                        Interactive Price Target & Investment Simulator
+                      </h4>
+                      <p className="text-slate-400 text-xs mt-0.5">
+                        Model your expected returns and profit multiples based on custom target price projections.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase font-bold text-slate-500">Quick Targets:</span>
+                      <button
+                        type="button"
+                        onClick={() => setCustomTargetPriceInput((displayPrice * 1.25).toFixed(2))}
+                        className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-300 font-bold border border-slate-700"
+                      >
+                        +25%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCustomTargetPriceInput((displayPrice * 2).toFixed(2))}
+                        className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-300 font-bold border border-slate-700"
+                      >
+                        2x
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCustomTargetPriceInput((displayPrice * 5).toFixed(2))}
+                        className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-300 font-bold border border-slate-700"
+                      >
+                        5x
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div>
+                      <label className="text-slate-400 font-bold text-[10px] uppercase block mb-1">Target Price (USD)</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-slate-500 font-mono font-bold">$</span>
+                        <input
+                          type="number"
+                          step="any"
+                          value={customTargetPriceInput}
+                          onChange={(e) => setCustomTargetPriceInput(e.target.value)}
+                          placeholder={targetP.toFixed(2)}
+                          className="input w-full pl-7 text-xs font-mono font-bold bg-slate-950 border-slate-700 text-slate-100"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 font-bold text-[10px] uppercase block mb-1">Simulated Investment ($)</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-slate-500 font-mono font-bold">$</span>
+                        <input
+                          type="number"
+                          value={customInvestInput}
+                          onChange={(e) => setCustomInvestInput(e.target.value)}
+                          className="input w-full pl-7 text-xs font-mono font-bold bg-slate-950 border-slate-700 text-slate-100"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-500 text-[10px] uppercase font-bold block">Expected ROI</span>
+                      <p className={`text-base font-extrabold font-mono mt-0.5 ${isProfit ? "text-emerald-400" : "text-rose-400"}`}>
+                        {isProfit ? "+" : ""}{simRoiPct.toFixed(2)}%
+                      </p>
+                      <span className="text-[10px] text-slate-400 font-mono">{(targetP / (displayPrice || 1)).toFixed(2)}x Multiple</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                      <span className="text-slate-500 text-[10px] uppercase font-bold block">Projected Portfolio Value</span>
+                      <p className="text-base font-extrabold font-mono text-slate-100 mt-0.5">
+                        ${simTotalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </p>
+                      <span className={`text-[10px] font-mono font-bold ${isProfit ? "text-emerald-400" : "text-rose-400"}`}>
+                        {isProfit ? "+$" : "-$"}{Math.abs(simProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })} Net
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* 6-Pillar Deep Forensic Breakdown */}

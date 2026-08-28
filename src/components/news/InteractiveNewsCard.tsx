@@ -52,18 +52,22 @@ export function InteractiveNewsCard({ item, onSelect }: InteractiveNewsCardProps
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span
               className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border backdrop-blur-md ${sentColor}`}
             >
               {item.sentiment}
             </span>
 
-            {item.finbert && (
+            {item.cryptobert ? (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-950/80 text-purple-300 border border-purple-500/40 backdrop-blur-md" title={`CryptoBERT (${item.cryptobert.model}) Confidence: ${(item.cryptobert.score * 100).toFixed(0)}%`}>
+                CryptoBERT {(item.cryptobert.score * 100).toFixed(0)}%
+              </span>
+            ) : item.finbert ? (
               <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-500/40 backdrop-blur-md" title={`ModernFinBERT score: ${item.finbert.score}`}>
                 FinBERT {item.finbert.score.toFixed(2)}
               </span>
-            )}
+            ) : null}
           </div>
 
           <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 backdrop-blur-md text-slate-300 border border-white/10">

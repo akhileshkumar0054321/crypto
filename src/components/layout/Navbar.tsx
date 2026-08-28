@@ -28,6 +28,7 @@ import {
   FileText,
   Flame,
   Calendar as CalendarIcon,
+  Radio,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -151,6 +152,18 @@ export function Navbar() {
               }`}
             >
               Home
+            </Link>
+
+            {/* Crypto Radar */}
+            <Link
+              href="/radar"
+              className={`transition-colors hover:text-white flex items-center gap-1.5 ${
+                path === "/radar" ? "text-white font-medium" : ""
+              }`}
+            >
+              <Radio size={13} className="text-emerald-400 animate-pulse" />
+              <span>Crypto Radar</span>
+              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-mono px-1 py-0.2 rounded font-bold">LIVE</span>
             </Link>
 
             {/* Markets ˅ */}
@@ -502,6 +515,18 @@ export function Navbar() {
             >
               <LayoutDashboard size={14} className="text-blue-400" />
               <span>Home & Markets</span>
+            </Link>
+
+            <Link
+              href="/radar"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2.5 rounded-lg bg-blue-950/60 border border-blue-500/30 text-blue-200 font-semibold flex items-center justify-between hover:bg-blue-900/50"
+            >
+              <div className="flex items-center gap-2">
+                <Radio size={14} className="text-emerald-400 animate-pulse" />
+                <span>Crypto Radar</span>
+              </div>
+              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono font-bold">LIVE</span>
             </Link>
 
             <Link

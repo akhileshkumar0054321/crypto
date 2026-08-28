@@ -96,8 +96,47 @@ export function NewsImpactModal({ item, onClose }: NewsImpactModalProps) {
 
         {/* Content Body */}
         <div className="p-6 space-y-6">
+          {/* CryptoBERT (ElKulako/cryptobert) NLP Sentiment Assessment Card */}
+          {item.cryptobert && (
+            <div className="p-4 rounded-xl bg-gradient-to-r from-purple-950/40 via-slate-900 to-purple-950/40 border border-purple-500/30 space-y-2.5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded">
+                    CryptoBERT (ElKulako/cryptobert)
+                  </span>
+                  <span className="text-xs font-bold text-white uppercase">
+                    Sentiment: {item.cryptobert.label}
+                  </span>
+                </div>
+                <div className="text-xs font-mono font-bold text-purple-300">
+                  Confidence: {(item.cryptobert.score * 100).toFixed(1)}% ({item.cryptobert.score.toFixed(3)})
+                </div>
+              </div>
+
+              {/* Mini Probability Distribution Bar */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                  <span className="text-emerald-400">Bullish: {Math.round((item.cryptobert.probabilities?.bullish || 0) * 100)}%</span>
+                  <span className="text-rose-400">Bearish: {Math.round((item.cryptobert.probabilities?.bearish || 0) * 100)}%</span>
+                  <span className="text-amber-400">Neutral: {Math.round((item.cryptobert.probabilities?.neutral || 0) * 100)}%</span>
+                </div>
+                <div className="w-full h-1.5 rounded-full bg-slate-950 overflow-hidden flex">
+                  <div style={{ width: `${Math.round((item.cryptobert.probabilities?.bullish || 0) * 100)}%` }} className="bg-emerald-500 h-full" />
+                  <div style={{ width: `${Math.round((item.cryptobert.probabilities?.bearish || 0) * 100)}%` }} className="bg-rose-500 h-full" />
+                  <div style={{ width: `${Math.round((item.cryptobert.probabilities?.neutral || 0) * 100)}%` }} className="bg-amber-500 h-full" />
+                </div>
+              </div>
+
+              {item.cryptobert.plain_english_takeaway && (
+                <p className="text-[11px] text-purple-200 leading-relaxed font-medium bg-purple-950/30 p-2.5 rounded-lg border border-purple-500/20">
+                  <strong>Plain English Takeaway:</strong> {item.cryptobert.plain_english_takeaway}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* ModernFinBERT NLP Assessment Card */}
-          {item.finbert && (
+          {item.finbert && !item.cryptobert && (
             <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-950/40 via-slate-900 to-indigo-950/40 border border-indigo-500/30 space-y-2.5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">

@@ -5,9 +5,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  const coin = await cryptoStore.getCoin(params.id);
+  const { id } = await Promise.resolve(params);
+  const coin = await cryptoStore.getCoin(id);
   const risk = coin ? (cryptoStore.riskScores.get(coin.coin_id) || cryptoStore.computeRisk(coin)) : null;
   const currentScore = risk?.score || 50;
 
@@ -25,7 +26,7 @@ export async function GET(
   }
 
   return NextResponse.json({
-    coin_id: params.id,
+    coin_id: id,
     history,
   });
 }

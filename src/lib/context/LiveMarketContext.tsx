@@ -33,116 +33,153 @@ export interface LiveTapeTrade {
   time: number;
 }
 
+const BINANCE_PAIR_TO_COIN_ID: Record<string, { id: string; symbol: string; name: string }> = {
+  BTCUSDT: { id: "bitcoin", symbol: "BTC", name: "Bitcoin" },
+  ETHUSDT: { id: "ethereum", symbol: "ETH", name: "Ethereum" },
+  SOLUSDT: { id: "solana", symbol: "SOL", name: "Solana" },
+  BNBUSDT: { id: "binancecoin", symbol: "BNB", name: "BNB" },
+  XRPUSDT: { id: "ripple", symbol: "XRP", name: "XRP" },
+  ADAUSDT: { id: "cardano", symbol: "ADA", name: "Cardano" },
+  DOGEUSDT: { id: "dogecoin", symbol: "DOGE", name: "Dogecoin" },
+  LINKUSDT: { id: "chainlink", symbol: "LINK", name: "Chainlink" },
+  PEPEUSDT: { id: "pepe", symbol: "PEPE", name: "Pepe" },
+  FLOKIUSDT: { id: "floki", symbol: "FLOKI", name: "FLOKI" },
+  AVAXUSDT: { id: "avalanche-2", symbol: "AVAX", name: "Avalanche" },
+  DOTUSDT: { id: "polkadot", symbol: "DOT", name: "Polkadot" },
+  POLUSDT: { id: "matic-network", symbol: "POL", name: "Polygon (POL)" },
+  MATICUSDT: { id: "matic-network", symbol: "POL", name: "Polygon (POL)" },
+  TONUSDT: { id: "the-open-network", symbol: "TON", name: "Toncoin" },
+  NEARUSDT: { id: "near", symbol: "NEAR", name: "NEAR Protocol" },
+  UNIUSDT: { id: "uniswap", symbol: "UNI", name: "Uniswap" },
+  SUIUSDT: { id: "sui", symbol: "SUI", name: "Sui" },
+  ARBUSDT: { id: "arbitrum", symbol: "ARB", name: "Arbitrum" },
+  SHIBUSDT: { id: "shiba-inu", symbol: "SHIB", name: "Shiba Inu" },
+  RENDERUSDT: { id: "render-token", symbol: "RENDER", name: "Render" },
+  FETUSDT: { id: "fetch-ai", symbol: "FET", name: "ASI Alliance" },
+  TAOUSDT: { id: "bittensor", symbol: "TAO", name: "Bittensor" },
+};
+
 const INITIAL_LIVE_COINS: Record<string, LivePriceTick> = {
   bitcoin: {
     coin_id: "bitcoin",
     symbol: "BTC",
     name: "Bitcoin",
-    price: 68420.5,
-    change24h: 3.42,
+    price: 79285.0,
+    change24h: -0.85,
     direction: null,
     lastTickTime: Date.now(),
     volume24h: 38400000000,
-    marketCap: 1345000000000,
+    marketCap: 1565000000000,
   },
   ethereum: {
     coin_id: "ethereum",
     symbol: "ETH",
     name: "Ethereum",
-    price: 3540.2,
-    change24h: 2.15,
+    price: 2489.5,
+    change24h: -1.72,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 19800000000,
-    marketCap: 425000000000,
+    volume24h: 18200000000,
+    marketCap: 300500000000,
   },
   solana: {
     coin_id: "solana",
     symbol: "SOL",
     name: "Solana",
-    price: 182.45,
-    change24h: 6.84,
+    price: 105.9,
+    change24h: 1.48,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 7420000000,
-    marketCap: 84000000000,
+    volume24h: 4800000000,
+    marketCap: 51200000000,
   },
   binancecoin: {
     coin_id: "binancecoin",
     symbol: "BNB",
     name: "BNB",
-    price: 592.1,
-    change24h: 1.05,
+    price: 704.5,
+    change24h: -1.05,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 1450000000,
-    marketCap: 88500000000,
+    volume24h: 1480000000,
+    marketCap: 104500000000,
   },
   ripple: {
     coin_id: "ripple",
     symbol: "XRP",
     name: "XRP",
-    price: 0.584,
-    change24h: -1.24,
+    price: 1.41,
+    change24h: -1.77,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 1200000000,
-    marketCap: 32800000000,
+    volume24h: 3450000000,
+    marketCap: 81800000000,
   },
   cardano: {
     coin_id: "cardano",
     symbol: "ADA",
     name: "Cardano",
-    price: 0.482,
-    change24h: 0.85,
+    price: 0.207,
+    change24h: -3.45,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 480000000,
-    marketCap: 17200000000,
+    volume24h: 245000000,
+    marketCap: 7450000000,
   },
   dogecoin: {
     coin_id: "dogecoin",
     symbol: "DOGE",
     name: "Dogecoin",
-    price: 0.148,
-    change24h: 8.92,
+    price: 0.0864,
+    change24h: -2.68,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 2100000000,
-    marketCap: 21500000000,
+    volume24h: 950000000,
+    marketCap: 12800000000,
   },
   pepe: {
     coin_id: "pepe",
     symbol: "PEPE",
     name: "Pepe",
-    price: 0.0000104,
-    change24h: 14.25,
+    price: 0.0000038,
+    change24h: -3.8,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 1850000000,
-    marketCap: 4380000000,
+    volume24h: 820000000,
+    marketCap: 1600000000,
   },
   chainlink: {
     coin_id: "chainlink",
     symbol: "LINK",
     name: "Chainlink",
-    price: 18.25,
-    change24h: 4.12,
+    price: 11.7,
+    change24h: -1.3,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 620000000,
-    marketCap: 10900000000,
+    volume24h: 295000000,
+    marketCap: 7150000000,
+  },
+  "avalanche-2": {
+    coin_id: "avalanche-2",
+    symbol: "AVAX",
+    name: "Avalanche",
+    price: 7.37,
+    change24h: -1.04,
+    direction: null,
+    lastTickTime: Date.now(),
+    volume24h: 181000000,
+    marketCap: 2950000000,
   },
   avalanche: {
     coin_id: "avalanche-2",
     symbol: "AVAX",
     name: "Avalanche",
-    price: 34.8,
-    change24h: -2.31,
+    price: 7.37,
+    change24h: -1.04,
     direction: null,
     lastTickTime: Date.now(),
-    volume24h: 530000000,
-    marketCap: 13800000000,
+    volume24h: 181000000,
+    marketCap: 2950000000,
   },
 };
 
@@ -203,9 +240,9 @@ export function LiveMarketProvider({ children }: { children: React.ReactNode }) 
       coin_id: "bitcoin",
       symbol: "BTC",
       type: "BUY",
-      price: 68420.5,
+      price: 79285.0,
       amount: 1.42,
-      value_usd: 97157.11,
+      value_usd: 112584.7,
       timestamp: "Just now",
       time: Date.now(),
     },
@@ -214,9 +251,9 @@ export function LiveMarketProvider({ children }: { children: React.ReactNode }) 
       coin_id: "ethereum",
       symbol: "ETH",
       type: "BUY",
-      price: 3540.2,
+      price: 2489.5,
       amount: 12.8,
-      value_usd: 45314.56,
+      value_usd: 31865.6,
       timestamp: "1s ago",
       time: Date.now() - 1000,
     },
@@ -225,9 +262,9 @@ export function LiveMarketProvider({ children }: { children: React.ReactNode }) 
       coin_id: "solana",
       symbol: "SOL",
       type: "SELL",
-      price: 182.45,
+      price: 105.9,
       amount: 180.0,
-      value_usd: 32841.0,
+      value_usd: 19062.0,
       timestamp: "3s ago",
       time: Date.now() - 3000,
     },
@@ -237,124 +274,209 @@ export function LiveMarketProvider({ children }: { children: React.ReactNode }) 
   const [recordingStartedAt] = useState(Date.now());
 
   const [globalStats, setGlobalStats] = useState({
-    totalMarketCap: 2480500000000,
-    totalVolume: 94820000000,
-    btcDominance: 54.8,
-    mcapChange24h: 1.84,
+    totalMarketCap: 2780500000000,
+    totalVolume: 128820000000,
+    btcDominance: 56.4,
+    mcapChange24h: -0.92,
     activeNodes: 64,
-    latencyMs: 18,
+    latencyMs: 14,
   });
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
 
-  // Interval duration based on speed
-  const getIntervalMs = useCallback(() => {
-    if (speed === "fast") return 1600; // 1.6s ticks
-    if (speed === "normal") return 3200; // 3.2s ticks
-    return 5500; // 5.5s ticks
-  }, [speed]);
+  // Sync real-time data from /api/coins
+  const syncServerCoins = useCallback(async () => {
+    try {
+      const res = await fetch("/api/coins");
+      if (res.ok) {
+        const coins = await res.json();
+        if (Array.isArray(coins) && coins.length > 0) {
+          setLivePrices((prev) => {
+            const next = { ...prev };
+            let totCap = 0;
+            let totVol = 0;
+            let btcCap = 0;
 
+            coins.forEach((c: any) => {
+              const old = next[c.coin_id];
+              const p = c.price_usd || old?.price || 0;
+              const ch = c.price_change_24h ?? old?.change24h ?? 0;
+              const dir = old ? (p > old.price ? "up" : p < old.price ? "down" : old.direction) : null;
+              
+              next[c.coin_id] = {
+                coin_id: c.coin_id,
+                symbol: c.symbol?.toUpperCase() || old?.symbol || c.coin_id.slice(0, 4).toUpperCase(),
+                name: c.name || old?.name || c.coin_id,
+                price: p,
+                change24h: Math.round(ch * 100) / 100,
+                direction: dir,
+                lastTickTime: Date.now(),
+                volume24h: c.volume_24h || old?.volume24h || 0,
+                marketCap: c.market_cap || old?.marketCap || 0,
+              };
+
+              totCap += c.market_cap || 0;
+              totVol += c.volume_24h || 0;
+              if (c.coin_id === "bitcoin") btcCap = c.market_cap || 0;
+            });
+
+            if (totCap > 0) {
+              setGlobalStats((prevStats) => ({
+                ...prevStats,
+                totalMarketCap: totCap,
+                totalVolume: totVol > 0 ? totVol : prevStats.totalVolume,
+                btcDominance: btcCap > 0 ? Math.round((btcCap / totCap) * 1000) / 10 : prevStats.btcDominance,
+              }));
+            }
+
+            return next;
+          });
+        }
+      }
+    } catch {
+      // Ignore network errors
+    }
+  }, []);
+
+  // Initialize and run real-time Binance WebSocket stream
   useEffect(() => {
+    // Initial fetch from server
+    syncServerCoins();
+
     if (!isLive) {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
       return;
     }
 
-    const intervalMs = getIntervalMs();
+    let isSubscribed = true;
 
-    intervalRef.current = setInterval(() => {
-      const tickTime = Date.now();
+    function connectWs() {
+      if (!isSubscribed) return;
+      try {
+        const ws = new WebSocket("wss://stream.binance.com:9443/ws/!miniTicker@arr");
+        wsRef.current = ws;
 
-      setLivePrices((prev) => {
-        const next: Record<string, LivePriceTick> = { ...prev };
-        const coinKeys = Object.keys(next);
-        if (coinKeys.length === 0) return prev;
-
-        const numToTick = Math.min(coinKeys.length, Math.floor(Math.random() * 4) + 2);
-        const shuffled = [...coinKeys].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, numToTick);
-
-        const newTrades: LiveTapeTrade[] = [];
-
-        selected.forEach((key) => {
-          const current = next[key];
-          if (!current || !current.price) return;
-
-          // Brownian realistic price delta: micro percentage ±(0.015% to 0.16%)
-          const drift = (Math.random() - 0.488) * (current.price > 100 ? 0.0018 : 0.0038);
-          const priceDelta = current.price * drift;
-          const newPrice = Math.max(0.0000001, current.price + priceDelta);
-          const isUp = priceDelta >= 0;
-
-          const changeDelta = drift * 25;
-          const newChange24h = (current.change24h || 0) + changeDelta;
-          const tickVol = (current.volume24h / 86400) * (0.8 + Math.random() * 1.2);
-
-          next[key] = {
-            price: newPrice,
-            change24h: Math.round(newChange24h * 100) / 100,
-            direction: isUp ? "up" : "down",
-            lastTickTime: tickTime,
-            volume24h: (current.volume24h || 1000000) * (1 + Math.random() * 0.0008),
-            marketCap: (current.marketCap || 10000000) * (1 + drift),
-          };
-
-          // Append to recorded ticks history
-          setRecordedTicks((prevRec) => {
-            const currentList = prevRec[key] || [];
-            const newTick: LiveRecordedTick = {
-              time: tickTime,
-              price: newPrice,
-              direction: isUp ? "up" : "down",
-              volume: tickVol,
-            };
-            // Keep up to 100 latest recorded ticks in rolling memory
-            const updated = [...currentList.slice(-99), newTick];
-            return { ...prevRec, [key]: updated };
-          });
-
-          // Generate a live tape trade print
-          const tradeSizeCoins = (current.price > 1000 ? Math.random() * 2 + 0.1 : Math.random() * 500 + 20);
-          newTrades.push({
-            id: `trade-${tickTime}-${key}`,
-            coin_id: key,
-            symbol: current.symbol || key.slice(0, 4).toUpperCase(),
-            type: isUp ? "BUY" : "SELL",
-            price: newPrice,
-            amount: Math.round(tradeSizeCoins * 100) / 100,
-            value_usd: Math.round(tradeSizeCoins * newPrice * 100) / 100,
-            timestamp: "Just now",
-            time: tickTime,
-          });
-        });
-
-        if (newTrades.length > 0) {
-          setLiveTapeTrades((prevTrades) => [...newTrades, ...prevTrades.slice(0, 15)]);
-          setTotalRecordedTicks((c) => c + newTrades.length);
-        }
-
-        return next;
-      });
-
-      // Fluctuate global metrics realistically
-      setGlobalStats((prev) => {
-        const mcapDrift = (Math.random() - 0.49) * 0.0006;
-        const volDrift = (Math.random() - 0.48) * 0.0012;
-        return {
-          totalMarketCap: Math.round(prev.totalMarketCap * (1 + mcapDrift)),
-          totalVolume: Math.round(prev.totalVolume * (1 + volDrift)),
-          btcDominance: Math.round((prev.btcDominance + (Math.random() - 0.5) * 0.02) * 10) / 10,
-          mcapChange24h: Math.round((prev.mcapChange24h + mcapDrift * 80) * 100) / 100,
-          activeNodes: Math.floor(62 + Math.random() * 5),
-          latencyMs: Math.floor(12 + Math.random() * 8),
+        ws.onopen = () => {
+          setGlobalStats((g) => ({ ...g, latencyMs: Math.floor(12 + Math.random() * 8) }));
         };
-      });
-    }, intervalMs);
+
+        ws.onmessage = (event) => {
+          if (!isSubscribed) return;
+          try {
+            const data = JSON.parse(event.data);
+            if (Array.isArray(data)) {
+              const tickTime = Date.now();
+              const newTrades: LiveTapeTrade[] = [];
+
+              setLivePrices((prev) => {
+                const next = { ...prev };
+                let updatedAny = false;
+
+                data.forEach((item: any) => {
+                  const sym = item.s;
+                  const mapping = BINANCE_PAIR_TO_COIN_ID[sym];
+                  if (!mapping) return;
+
+                  const price = parseFloat(item.c);
+                  const open = parseFloat(item.o);
+                  const quoteVol = parseFloat(item.q);
+                  if (isNaN(price) || price <= 0) return;
+
+                  const change24h = open > 0 ? ((price - open) / open) * 100 : 0;
+                  const old = next[mapping.id];
+                  const oldPrice = old?.price || price;
+                  const isUp = price >= oldPrice;
+                  const dir = price > oldPrice ? "up" : price < oldPrice ? "down" : old?.direction || null;
+
+                  next[mapping.id] = {
+                    coin_id: mapping.id,
+                    symbol: mapping.symbol,
+                    name: mapping.name,
+                    price: price,
+                    change24h: Math.round(change24h * 100) / 100,
+                    direction: dir,
+                    lastTickTime: tickTime,
+                    volume24h: quoteVol > 0 ? quoteVol : old?.volume24h || 1000000,
+                    marketCap: old?.marketCap ? (old.marketCap / oldPrice) * price : price * 1000000,
+                  };
+                  updatedAny = true;
+
+                  // Append genuine tick to recorded history
+                  setRecordedTicks((prevRec) => {
+                    const currentList = prevRec[mapping.id] || [];
+                    const newTick: LiveRecordedTick = {
+                      time: tickTime,
+                      price: price,
+                      direction: isUp ? "up" : "down",
+                      volume: (quoteVol / 86400) * (0.8 + Math.random() * 0.4),
+                    };
+                    return { ...prevRec, [mapping.id]: [...currentList.slice(-99), newTick] };
+                  });
+
+                  // Add trade to tape if price fluctuated
+                  if (price !== oldPrice && Math.random() > 0.4) {
+                    const amountCoins = price > 1000 ? Math.random() * 1.5 + 0.05 : Math.random() * 200 + 10;
+                    newTrades.push({
+                      id: `trade-${tickTime}-${mapping.id}-${Math.random()}`,
+                      coin_id: mapping.id,
+                      symbol: mapping.symbol,
+                      type: isUp ? "BUY" : "SELL",
+                      price: price,
+                      amount: Math.round(amountCoins * 100) / 100,
+                      value_usd: Math.round(amountCoins * price * 100) / 100,
+                      timestamp: "Just now",
+                      time: tickTime,
+                    });
+                  }
+                });
+
+                if (newTrades.length > 0) {
+                  setLiveTapeTrades((prevTrades) => [...newTrades, ...prevTrades.slice(0, 20)]);
+                  setTotalRecordedTicks((c) => c + newTrades.length);
+                }
+
+                return updatedAny ? next : prev;
+              });
+            }
+          } catch {
+            // Ignore parse errors
+          }
+        };
+
+        ws.onerror = () => {
+          if (ws) ws.close();
+        };
+
+        ws.onclose = () => {
+          if (isSubscribed) {
+            // Reconnect after 3 seconds
+            setTimeout(connectWs, 3000);
+          }
+        };
+      } catch {
+        if (isSubscribed) {
+          setTimeout(connectWs, 4000);
+        }
+      }
+    }
+
+    connectWs();
+
+    // Fallback polling interval to ensure custom tokens and REST stays in sync
+    const pollInterval = setInterval(syncServerCoins, 6000);
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      isSubscribed = false;
+      clearInterval(pollInterval);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
-  }, [isLive, speed, getIntervalMs]);
+  }, [isLive, syncServerCoins]);
 
   const getLiveCoin = useCallback(
     (coinId: string, fallbackPrice = 100, fallbackChange = 0): LivePriceTick => {

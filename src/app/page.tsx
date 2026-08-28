@@ -19,6 +19,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Filter,
+  Radio,
+  Compass,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,6 +30,7 @@ import { NewsImpactModal } from "@/components/news/NewsImpactModal";
 import { RealtimeCoinMiniBarGraph } from "@/components/charts/RealtimeCoinMiniBarGraph";
 import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartModal";
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
+import { RealtimeCryptoRadar } from "@/components/analysis/RealtimeCryptoRadar";
 import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
 import { NewsItem } from "@/types";
 
@@ -54,7 +57,7 @@ export default function DashboardPage() {
   const [selectedAnalysisCoin, setSelectedAnalysisCoin] = useState<any | null>(null);
   const [radarSelectedCoinId, setRadarSelectedCoinId] = useState<string>("");
   const [displayCount, setDisplayCount] = useState<number>(50);
-  const [radarViewMode, setRadarViewMode] = useState<"table" | "tradingview">("table");
+  const [radarViewMode, setRadarViewMode] = useState<"radar" | "table" | "tradingview">("table");
   const [radarActiveTvCoinId, setRadarActiveTvCoinId] = useState<string>("bitcoin");
   const [radarTvInterval, setRadarTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
 
@@ -377,6 +380,18 @@ export default function DashboardPage() {
               <div className="flex items-center gap-1 bg-[#0b101e] p-1 rounded-xl border border-slate-700/80">
                 <button
                   type="button"
+                  onClick={() => setRadarViewMode("radar")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    radarViewMode === "radar"
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/20"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Radio size={13} className="text-emerald-300 animate-pulse" />
+                  <span>Visual Radar</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setRadarViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                     radarViewMode === "table"
@@ -487,8 +502,21 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* View Mode: TradingView Live Radar Terminal vs Data Table */}
-        {radarViewMode === "tradingview" ? (
+        {/* View Mode Content: Visual Radar vs TradingView Terminal vs Data Table */}
+        {radarViewMode === "radar" ? (
+          <div className="p-3 sm:p-5">
+            <RealtimeCryptoRadar
+              onSelectCoinForAnalysis={(coin) => {
+                const live = getLiveCoin(coin.coin_id, coin.price_usd || 100, coin.price_change_24h || 0);
+                setSelectedAnalysisCoin({
+                  ...coin,
+                  price_usd: live.price || coin.price_usd,
+                  price_change_24h: live.change24h ?? coin.price_change_24h,
+                });
+              }}
+            />
+          </div>
+        ) : radarViewMode === "tradingview" ? (
           <div className="p-4 sm:p-6 space-y-4 bg-[#090d18]">
             {/* Quick Coin Carousel / Switcher Pills for Radar Coins */}
             <div className="space-y-2">

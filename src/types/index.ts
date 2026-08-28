@@ -17,6 +17,65 @@ export interface NewsImpactBreakdown {
   institutional_playbook: string;
 }
 
+export interface CryptoBERTResult {
+  sentence: string;
+  label: "Bullish" | "Bearish" | "Neutral" | "BULLISH" | "BEARISH" | "NEUTRAL";
+  score: number; // confidence 0.000 to 1.000
+  probabilities: {
+    bullish: number;
+    bearish: number;
+    neutral: number;
+  };
+  sentiment_tag: "BULLISH" | "BEARISH" | "NEUTRAL";
+  polarity: number; // -1.0 to +1.0
+  model: string; // "ElKulako/cryptobert"
+  provider: "hf-inference" | "crypto-nlp-engine";
+  plain_english_takeaway: string;
+}
+
+export interface SimpleEnglishNewsAudit {
+  headline: string;
+  source: string;
+  published_at: string;
+  cryptobert: CryptoBERTResult;
+  what_happened_simple_words: string;
+  why_it_matters_for_price: string;
+  actionable_tip_for_user: string;
+}
+
+export interface SimpleEnglishCoinAnalysis {
+  coin_id: string;
+  coin_name: string;
+  symbol: string;
+  current_price_usd: number;
+  price_change_24h: number;
+  verdict: "STRONG_BUY" | "ACCUMULATE_DCA" | "HOLD_WATCH" | "HIGH_RISK_CAUTION" | "AVOID_DUMP_TRAP";
+  verdict_badge: string;
+  verdict_simple_summary: string;
+  is_real_utility_or_hype: "REAL_UTILITY" | "MODERATE_UTILITY" | "HIGH_RISK_MEME" | "POTENTIAL_EXIT_TRAP";
+  
+  what_this_coin_does_for_beginners: string;
+  what_is_happening_right_now: string;
+  news_impact_breakdown_simple: SimpleEnglishNewsAudit[];
+  overall_cryptobert_sentiment_score: number; // 0 to 100
+  overall_sentiment_label: "STRONGLY_BULLISH" | "BULLISH" | "NEUTRAL" | "BEARISH" | "HIGHLY_BEARISH";
+  
+  whale_and_smart_money_activity_simple: string;
+  developer_and_team_reality_check: string;
+  danger_signals_to_watch: string[];
+  growth_catalysts_to_watch: string[];
+  
+  step_by_step_user_playbook: {
+    for_beginners: string;
+    for_long_term_investors: string;
+    for_short_term_traders: string;
+    strict_rule: string;
+  };
+  
+  model_pipeline: string;
+  generated_at: string;
+}
+
 export interface ModernFinBERTResult {
   sentence: string;
   label: "positive" | "negative" | "neutral" | "POSITIVE" | "NEGATIVE" | "NEUTRAL";
@@ -46,6 +105,7 @@ export interface NewsItem {
   image_url?: string;
   impact_breakdown?: NewsImpactBreakdown;
   finbert?: ModernFinBERTResult;
+  cryptobert?: CryptoBERTResult;
 }
 
 export interface NewsImpactAnalysis {

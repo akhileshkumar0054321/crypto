@@ -5,11 +5,12 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  const coin = await cryptoStore.getCoin(params.id);
+  const { id } = await Promise.resolve(params);
+  const coin = await cryptoStore.getCoin(id);
   if (!coin) {
-    return NextResponse.json({ error: `Coin '${params.id}' not found` }, { status: 404 });
+    return NextResponse.json({ error: `Coin '${id}' not found` }, { status: 404 });
   }
 
   const risk = cryptoStore.riskScores.get(coin.coin_id) || cryptoStore.computeRisk(coin);

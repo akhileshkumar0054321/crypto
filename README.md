@@ -1,194 +1,177 @@
-# 🚀 Crypto Risk Platform
+# 🛡️ CryptoVision — AI Risk Management & Institutional Forensic Intelligence for Cryptocurrency
 
-An AI-powered cryptocurrency risk management platform featuring real-time risk scoring, fraud detection, multi-agent analysis, RAG knowledge retrieval, and a professional trading dashboard.
-
----
-
-## Features
-
-- **Real-time Risk Scoring** — 0–100 risk scores for 12+ cryptocurrencies, updated every 60s
-- **Fraud Detection** — Pump & dump, wash trading, honeypot detection via Isolation Forest
-- **Multi-Agent Analysis** — 6 specialized CrewAI agents (market, risk, on-chain, sentiment, coordinator, reporter)
-- **RAG Knowledge System** — ChromaDB + LangChain for crypto whitepaper & audit retrieval
-- **AI Reports** — BUY/SELL/HOLD recommendations via Phi-2 / Mistral 7B
-- **Real-time Dashboard** — Next.js 14 trading terminal with live WebSocket data
-- **Portfolio Risk** — Weighted portfolio risk assessment
+> **Hackathon Submission Track:** **AI Risk Management**  
+> **Tagline:** Democratizing institutional risk intelligence — turning complex on-chain data, tokenomic traps, and market noise into actionable, plain-English protection for every investor.
 
 ---
 
-## Quick Start
+## 🎯 The Pitch: Why CryptoVision Matters
 
-### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- Docker Desktop
-- VS Code (recommended)
+### The Core Problem
+In traditional finance, institutional hedge funds and risk desks use multi-million dollar Bloomberg terminals, quantitative risk engines, and teams of data scientists to evaluate downside risk before risking a single dollar. 
 
-### 1. Clone & Enter Project
-```powershell
-cd C:\Users\hp\.gemini\antigravity\scratch\crypto-risk-platform
-```
+In cryptocurrency, over **100 million retail investors** enter a 24/7 global market with almost **zero institutional risk tooling**. They face:
+- **Deceptive Influencer Hype & Bot-Driven FOMO**: Artificial social media hype masking worthless or heavily inflated tokens.
+- **Hidden Tokenomic & Smart Contract Traps**: Unlocking cliffs, centralized creator mint keys, and unlocked liquidity pools that trigger unexpected crashes and rug pulls.
+- **Scattered & Overwhelming Data**: Traders juggle 6+ disjointed websites (block explorers, DEX screeners, news aggregators, sentiment gauges, and charts) to research a single coin.
+- **Cryptic Technical Jargon**: Whitepapers and audit reports filled with terminology that beginners cannot understand.
 
-### 2. Copy Environment File
-```powershell
-Copy-Item .env.example .env
-# Edit .env with your API keys (see API Keys section below)
-```
-
-### 3. Start Docker Services (PostgreSQL + Redis)
-```powershell
-cd docker
-docker compose up -d
-cd ..
-```
-
-### 4. Set Up Python Backend
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-### 5. Run Database Migrations
-```powershell
-alembic upgrade head
-```
-
-### 6. Start Backend Server
-```powershell
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 7. Set Up & Start Frontend (new terminal)
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-### 8. Open in Browser
-- **Frontend:** http://localhost:3000
-- **API Docs:** http://localhost:8000/docs
-- **PgAdmin:** http://localhost:5050 (with `--profile dev` Docker flag)
+**The Result:** Billions of dollars are lost every year not because people didn't research, but because they lacked an intelligent system to quantify and explain the risks to them.
 
 ---
 
-## Project Structure
+## 💡 The Solution: AI-Powered Risk Democratization
 
-```
-crypto-risk-platform/
-├── backend/
-│   ├── app/
-│   │   ├── api/routes/      # FastAPI route handlers
-│   │   ├── core/            # Config, security, logging
-│   │   ├── db/              # SQLAlchemy models & sessions
-│   │   ├── services/        # Business logic layer
-│   │   ├── ml/              # ML models & inference
-│   │   ├── agents/          # CrewAI agent definitions
-│   │   ├── rag/             # RAG system (ChromaDB + LangChain)
-│   │   ├── data/            # Data collectors (CoinGecko, Binance, etc.)
-│   │   └── workers/         # Celery background tasks
-│   ├── tests/
-│   ├── alembic/             # Database migrations
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── app/             # Next.js 14 App Router pages
-│   │   ├── components/      # Reusable UI components
-│   │   ├── hooks/           # Custom React hooks
-│   │   ├── lib/             # API client, utilities
-│   │   ├── store/           # Zustand state management
-│   │   └── types/           # TypeScript types
-│   └── package.json
-├── ml_models/               # Saved model artifacts (.pkl, .pt)
-├── vector_store/            # ChromaDB persistent data
-├── docker/
-│   ├── docker-compose.yml
-│   ├── postgres/init.sql
-│   └── redis/redis.conf
-├── .env.example
-└── README.md
-```
+**CryptoVision** is an intelligent, real-time risk management platform that bridges the gap between raw blockchain data and smart investor decisions.
+
+CryptoVision does not just display prices — it continuously ingests high-frequency exchange feeds, decentralized pool liquidity, on-chain whale activity, developer repositories, and breaking news. It runs this data through specialized machine learning models (**CryptoBERT**, **ModernFinBERT**, and **Google Gemini**) to output an objective **0–100 Composite Risk Score** alongside a **Simple-English breakdown** that any human can understand in under 30 seconds.
 
 ---
 
-## API Keys Required
+## 🧠 The 5 Pillars of the AI Risk Engine
 
-| Service | Purpose | Get Free Key |
-|---------|---------|-------------|
-| CoinGecko | Price & market data | [coingecko.com/api](https://www.coingecko.com/en/api) |
-| Etherscan | On-chain data | [etherscan.io/register](https://etherscan.io/register) |
-| Alchemy | Blockchain node | [alchemy.com](https://www.alchemy.com) |
-| Twitter/X | Sentiment data | [developer.twitter.com](https://developer.twitter.com) |
-| Reddit | Sentiment data | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) |
-| HuggingFace | LLM access | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) |
-
-> DefiLlama and Binance public market data require **no API key**.
-
----
-
-## Architecture
+CryptoVision evaluates every asset through a 5-dimensional risk framework:
 
 ```
-Next.js Frontend  ←→  FastAPI Backend  ←→  PostgreSQL
-      ↕                    ↕                   ↕
-  WebSocket          Celery Workers         Redis
-                          ↕
-              ┌───────────┼───────────┐
-          Data Pipeline  ML Engine  Agent System
-              ↕              ↕           ↕
-         APIs/WebSockets  XGBoost    CrewAI Agents
-                          LSTM       RAG (ChromaDB)
-                        Iso Forest   Phi-2 / Mistral
+                            ┌──────────────────────────────────────────────┐
+                            │        CRYPTOVISION MULTI-FACTOR AI          │
+                            │              RISK ENGINE (0-100)             │
+                            └──────────────────────┬───────────────────────┘
+                                                   │
+         ┌─────────────────────┬───────────────────┼───────────────────┬─────────────────────┐
+         ▼                     ▼                   ▼                   ▼                     ▼
+┌──────────────────┐  ┌──────────────────┐  ┌───────────────────┐  ┌─────────────────┐  ┌──────────────────┐
+│ Market Volatility│  │ Liquidity Depth  │  │ Whale & On-Chain  │  │ Developer Code  │  │ NLP Sentiment &  │
+│  & Beta Risk     │  │  & Slippage Risk │  │Concentration Risk │  │  Integrity Risk │  │ Media FUD Risk   │
+└──────────────────┘  └──────────────────┘  └───────────────────┘  └─────────────────┘  └──────────────────┘
 ```
 
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 14, TypeScript, TailwindCSS, Recharts, Zustand |
-| Backend | FastAPI, Uvicorn, Celery, WebSockets |
-| Database | PostgreSQL (asyncpg), Redis |
-| ML | XGBoost, scikit-learn, PyTorch (LSTM) |
-| NLP | Sentence Transformers, FinBERT |
-| RAG | LangChain, ChromaDB, FAISS |
-| Agents | CrewAI, LangGraph |
-| LLM | Phi-2 (CPU) / Mistral 7B (GPU) |
-| Blockchain | Web3.py, CCXT, Etherscan API |
+1. **Market Volatility & Beta Risk**: Quantifies historical drawdowns, price swing intensity, and standard deviation to stop users from over-allocating to hyper-volatile assets.
+2. **Liquidity Depth & Slippage Risk**: Measures order book depth and volume-to-market-cap ratios to protect traders from getting trapped in illiquid pools with high exit slippage.
+3. **Whale & On-Chain Concentration Risk**: Analyzes the top 10 wallet holdings and exchange inflows/outflows to detect early insider dumping before the market crashes.
+4. **Developer Code & Protocol Integrity Risk**: Verifies smart contract audits, timelock safety, and GitHub development cadence to expose abandoned or dangerous projects.
+5. **AI NLP Sentiment & Media Risk**: Uses specialized language models to compute live probability distributions (`Bullish %`, `Bearish %`, `Neutral %`) across breaking news and social feeds.
 
 ---
 
-## Development Commands
+## 🔬 Architectural Choices: What We Built & Why We Chose It
 
-```powershell
-# Start all services
-docker compose -f docker/docker-compose.yml up -d
+Every component and model inside CryptoVision was selected with a specific risk management purpose:
 
-# Backend (from /backend with .venv activated)
-uvicorn app.main:app --reload
+### 1. Domain-Specific NLP: `ElKulako/cryptobert`
+- **Why it was chosen:** Generic natural language processors fail when evaluating crypto discourse because words like *"moon"*, *"pump"*, *"rekt"*, *"dump"*, or *"hodl"* have unique contextual meanings. `CryptoBERT` is a RoBERTa transformer pre-trained specifically on cryptocurrency discussions, allowing our engine to accurately detect panic selling, artificial hype, and market sentiment shifts.
 
-# Celery worker
-celery -A app.workers.celery_app worker --loglevel=info
+### 2. Deep Financial Analysis: `tabularisai/ModernFinBERT`
+- **Why it was chosen:** Complements CryptoBERT by processing macro-economic news, central bank policies, institutional filings, and regulatory announcements with financial-grade precision.
 
-# Celery beat (scheduler)
-celery -A app.workers.celery_app beat --loglevel=info
+### 3. Generative Reasoning: Google Gemini API
+- **Why it was chosen:** Acts as the cognitive engine for our **AI Risk Copilot** and the **6-Section Institutional Forensic Audit Dossier**. Gemini synthesizes multi-source numeric data into plain-English explanations, tailored risk playbooks, and stress-test scenarios.
 
-# Frontend
-cd frontend && npm run dev
+### 4. High-Performance Web Engine: Next.js 14 (App Router)
+- **Why it was chosen:** Delivers instant page rendering, server-side data streaming, and strict security isolation. All sensitive AI inference and API keys remain safely guarded on the server side, never exposed to client browsers.
 
-# Run tests
-cd backend && pytest tests/ -v --cov=app
+### 5. Multi-Source On-Chain & DEX Feeds (DexScreener & DeFi Llama)
+- **Why it was chosen:** Traditional market trackers often ignore the newest small-cap tokens and meme pools where rug-pull risk is highest. By integrating DexScreener pair feeds and DeFi Llama TVL analytics, CryptoVision monitors newly launched liquidity pools and cross-chain bridge health in real time.
 
-# DB migration
-alembic revision --autogenerate -m "description"
-alembic upgrade head
+---
+
+## 🌟 Flagship Features & User Experience
+
+### 1. 📡 Live Crypto Risk Radar & Custom Token Scanner
+- Interactive radar visualizing market risk tiers: **Low Risk (0–25)**, **Moderate (26–50)**, **High Risk (51–75)**, and **Critical Danger (76–100)**.
+- Search and scan any custom coin symbol or smart contract address across EVM chains and Solana to get an instant safety audit.
+
+### 2. 📖 "Simple English" Translation Hub
+Designed specifically to protect non-technical investors from confusion:
+- **What This Coin Actually Does**: Translates whitepaper buzzwords into clear, everyday analogies.
+- **What is Happening Right Now**: Summarizes active market catalysts without confusing technical jargon.
+- **Whale Movements Decoded**: Explains whether large wallet owners are accumulating or offloading on retail.
+- **Team Reality Check**: Objective assessment of real developer momentum versus empty marketing promises.
+- **The Golden Rule for Your Money**: One foundational safety takeaway for the selected asset.
+
+### 3. 📑 6-Section Institutional Forensic Audit Dossier
+Comprehensive, institutional-grade risk reports generated dynamically:
+- **Section 1**: Asset Identity, Cycle Drawdowns & Historical Milestones
+- **Section 2**: Protocol Architecture, Consensus & Network Utility
+- **Section 3**: Tokenomics Health, Supply Inflation & Vesting Unlock Cliffs
+- **Section 4**: Point-by-Point Breaking News & CryptoBERT Probability Breakdown
+- **Section 5**: Smart Contract Security, Centralization Vectors & Red Flag Check
+- **Section 6**: 30-Day & 90-Day Predictive Scenarios (Bull, Bear, Base Case) & Invalidation Playbook
+
+### 4. 💼 Portfolio Stress-Testing & Value-at-Risk (VaR) Simulator
+- Simulates user portfolios against historical black swan events (e.g., the **FTX Crash**, **Terra/Luna Collapse**, and **March 2020 Liquidity Shock**).
+- Analyzes asset correlation so investors avoid holding multiple tokens that crash simultaneously.
+
+### 5. 🤖 AI Risk Copilot
+- Always-accessible conversational risk assistant.
+- Inquires directly about smart contract safety, market drops, diversification advice, and regulatory developments.
+
+---
+
+## 🏛️ Application Architecture
+
+```
+├── src/
+│   ├── app/                                # Next.js App Router & Server API Routes
+│   │   ├── layout.tsx                      # Global layout & AI Copilot drawer
+│   │   ├── page.tsx                        # Live Risk Radar, Heatmaps & Token Scanner
+│   │   ├── coin/[id]/                      # Individual coin terminal & CryptoBERT audit
+│   │   ├── defi/                           # DeFi protocol yields & chain flashcards
+│   │   ├── alerts/                         # Real-time risk spike notification manager
+│   │   ├── portfolio/                      # Portfolio risk optimizer, VaR & stress testing
+│   │   ├── reports/                        # Printable institutional forensic audit dossiers
+│   │   └── api/                            # Server-Side API Handlers
+│   │       ├── coins/                      # Market data, scanning & coin analytics
+│   │       ├── nlp/                        # CryptoBERT & ModernFinBERT sentiment endpoints
+│   │       ├── dexscreener/                # Small-cap DEX tokens & trending pairs
+│   │       ├── defi/                       # DeFi Llama protocol & TVL data feeds
+│   │       ├── news/                       # Breaking crypto news & NLP impact scoring
+│   │       ├── reports/                    # 6-Section forensic report synthesizer
+│   │       └── risk/                       # Risk engine calculation endpoints
+│   │
+│   ├── components/                         # Reusable UI & Interactive Components
+│   │   ├── analysis/                       # Risk radars, 6-Section modals & Plain-English cards
+│   │   ├── charts/                         # TradingView Pro, Canvas candlestick graphs, Depth charts
+│   │   ├── news/                           # Interactive news cards & sentiment breakdown modals
+│   │   ├── defi/                           # Chain flashcards, protocol TVL cards & yield tables
+│   │   ├── ai/                             # Interactive AI Risk Copilot chat interface
+│   │   ├── layout/                         # Navigation bar, live price ticker tape, footer
+│   │   └── ui/                             # Risk gauges, stat badges, modal dialogs
+│   │
+│   ├── lib/                                # Core Services & State Management
+│   │   ├── server/                         # Server-only services (API keys kept secure here)
+│   │   │   ├── cryptoService.ts            # Central market data engine & risk calculator
+│   │   │   ├── cryptoBert.ts               # Hugging Face CryptoBERT client & tokenizer logic
+│   │   │   ├── modernFinbert.ts            # ModernFinBERT financial sentiment client
+│   │   │   ├── dexScreenerService.ts       # DexScreener small-cap integration
+│   │   │   └── defiLlamaService.ts         # DeFi Llama protocol & TVL integration
+│   │   ├── context/                        # React Context providers (LiveMarket, Alerts, Auth)
+│   │   ├── store/                          # Zustand client-side application state
+│   │   ├── api.ts                          # Client API service wrapper
+│   │   └── utils.ts                        # Risk scoring formulas, formatting & styling helpers
+│   │
+│   └── types/                              # TypeScript domain interfaces & data models
 ```
 
 ---
 
-## License
+## 🔒 Configured Environment Keys
 
-MIT License — see [LICENSE](LICENSE) for details.
+To ensure security, all external API integrations are proxied exclusively through server-side route handlers (`/api/*`). The application uses the following environment variables:
+
+- `GEMINI_API_KEY`: Powers the conversational AI Risk Copilot and 6-section forensic report generation.
+- `HUGGINGFACE_API_TOKEN`: Hugging Face Inference API for `ElKulako/cryptobert` NLP sentiment analysis.
+- `COINGECKO_API_KEY`: Global cryptocurrency pricing, historical candlestick data, and token metadata.
+- `ETHERSCAN_API_KEY`: Smart contract verification and on-chain wallet tracking.
+- `ALCHEMY_API_KEY`: High-throughput blockchain RPC node access.
+- `BINANCE_API_KEY` / `BINANCE_API_SECRET`: High-frequency exchange ticker and order book depth data.
+- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`: Automated risk spike alert broadcasts.
+
+---
+
+## 🏆 Summary: Why CryptoVision is a Winning Hackathon Project
+
+- **Direct Track Alignment**: Specifically built to tackle **AI Risk Management**, providing real-world protection against capital loss, rug pulls, and emotional trading.
+- **Deep Technical Craftsmanship**: Leverages domain-specialized transformer models (`CryptoBERT`) and generative AI reasoning (`Google Gemini`) alongside on-chain DEX forensics.
+- **Human-Centric Design**: Turns intimidating blockchain math and whitepaper buzzwords into straightforward, plain-English guidance anyone can understand.
+- **Institutional Quality**: Features printable 6-section forensic audit dossiers, historical black-swan portfolio stress testing, and real-time risk radars.

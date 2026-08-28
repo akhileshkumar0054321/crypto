@@ -22,15 +22,17 @@ export async function GET(
 
     const risk = cryptoStore.riskScores.get(coin.coin_id) || cryptoStore.computeRisk(coin as any);
 
-    const [report, newsImpact, viability, tokenomics, codeAudit, scenarios, news] = await Promise.all([
-      cryptoStore.generateAIReport(coinId),
-      cryptoStore.analyzeCoinNewsImpact(coinId, customHeadline),
-      cryptoStore.getFutureViability(coin as any),
-      cryptoStore.getTokenomicsAudit(coin as any),
-      cryptoStore.getCodeAndTeamAudit(coin as any),
-      cryptoStore.getPriceScenarios(coin as any),
-      cryptoStore.getNews(coin as any),
-    ]);
+    const [report, newsImpact, viability, tokenomics, codeAudit, scenarios, news, simpleEnglishAnalysis] =
+      await Promise.all([
+        cryptoStore.generateAIReport(coinId),
+        cryptoStore.analyzeCoinNewsImpact(coinId, customHeadline),
+        cryptoStore.getFutureViability(coin as any),
+        cryptoStore.getTokenomicsAudit(coin as any),
+        cryptoStore.getCodeAndTeamAudit(coin as any),
+        cryptoStore.getPriceScenarios(coin as any),
+        cryptoStore.getNews(coin as any),
+        cryptoStore.generateSimpleEnglishCoinAnalysis(coinId, customHeadline),
+      ]);
 
     const detailedReport = await cryptoStore.getDetailedCoinAudit(coinId, customHeadline, newsImpact);
 
@@ -45,6 +47,7 @@ export async function GET(
       scenarios,
       news,
       detailedReport,
+      simpleEnglishAnalysis,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -76,15 +79,17 @@ export async function POST(
 
     const risk = cryptoStore.riskScores.get(coin.coin_id) || cryptoStore.computeRisk(coin as any);
 
-    const [report, newsImpact, viability, tokenomics, codeAudit, scenarios, news] = await Promise.all([
-      cryptoStore.generateAIReport(coinId),
-      cryptoStore.analyzeCoinNewsImpact(coinId, customHeadline),
-      cryptoStore.getFutureViability(coin as any),
-      cryptoStore.getTokenomicsAudit(coin as any),
-      cryptoStore.getCodeAndTeamAudit(coin as any),
-      cryptoStore.getPriceScenarios(coin as any),
-      cryptoStore.getNews(coin as any),
-    ]);
+    const [report, newsImpact, viability, tokenomics, codeAudit, scenarios, news, simpleEnglishAnalysis] =
+      await Promise.all([
+        cryptoStore.generateAIReport(coinId),
+        cryptoStore.analyzeCoinNewsImpact(coinId, customHeadline),
+        cryptoStore.getFutureViability(coin as any),
+        cryptoStore.getTokenomicsAudit(coin as any),
+        cryptoStore.getCodeAndTeamAudit(coin as any),
+        cryptoStore.getPriceScenarios(coin as any),
+        cryptoStore.getNews(coin as any),
+        cryptoStore.generateSimpleEnglishCoinAnalysis(coinId, customHeadline),
+      ]);
 
     const detailedReport = await cryptoStore.getDetailedCoinAudit(coinId, customHeadline, newsImpact);
 
@@ -99,6 +104,7 @@ export async function POST(
       scenarios,
       news,
       detailedReport,
+      simpleEnglishAnalysis,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {

@@ -5,9 +5,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  const existing = cryptoStore.alerts.get(params.id);
+  const { id } = await Promise.resolve(params);
+  const existing = cryptoStore.alerts.get(id);
   if (!existing) {
     return NextResponse.json({ error: "Alert not found" }, { status: 404 });
   }
@@ -16,10 +17,11 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
-    const existing = cryptoStore.alerts.get(params.id);
+    const { id } = await Promise.resolve(params);
+    const existing = cryptoStore.alerts.get(id);
     if (!existing) {
       return NextResponse.json({ error: "Alert not found" }, { status: 404 });
     }
@@ -32,7 +34,7 @@ export async function PUT(
       threshold: body?.threshold !== undefined ? Number(body.threshold) : existing.threshold,
     };
 
-    cryptoStore.alerts.set(params.id, updated);
+    cryptoStore.alerts.set(id, updated);
     return NextResponse.json(updated);
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || "Alert update error" }, { status: 500 });
@@ -41,11 +43,12 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  if (cryptoStore.alerts.has(params.id)) {
-    cryptoStore.alerts.delete(params.id);
-    return NextResponse.json({ status: "deleted", id: params.id });
+  const { id } = await Promise.resolve(params);
+  if (cryptoStore.alerts.has(id)) {
+    cryptoStore.alerts.delete(id);
+    return NextResponse.json({ status: "deleted", id });
   }
   return NextResponse.json({ error: "Alert not found" }, { status: 404 });
 }

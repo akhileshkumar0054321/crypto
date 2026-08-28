@@ -5,15 +5,16 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  const alert = cryptoStore.alerts.get(params.id);
+  const { id } = await Promise.resolve(params);
+  const alert = cryptoStore.alerts.get(id);
   if (!alert) {
     return NextResponse.json({ error: "Alert not found" }, { status: 404 });
   }
 
   alert.is_active = !alert.is_active;
-  cryptoStore.alerts.set(params.id, alert);
+  cryptoStore.alerts.set(id, alert);
 
   return NextResponse.json(alert);
 }

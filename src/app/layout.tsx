@@ -8,8 +8,8 @@ import { Providers } from "./providers";
 import { PuterAICopilot } from "@/components/ai/PuterAICopilot";
 
 export const metadata: Metadata = {
-  title: "cryptoVision | Real-Time Cryptocurrency Intelligence & Risk Radar",
-  description: "Real-time cryptocurrency risk scoring, live market radar & forensic blockchain analysis",
+  title: "CryptoVision | Real-Time Cryptocurrency Intelligence & Risk Radar",
+  description: "Real-time cryptocurrency intelligence, live radar surveillance, DexScreener small-cap token profiling, CryptoBERT (ElKulako/cryptobert) NLP sentiment analysis, simple-English coin breakdowns, and institutional 6-section forensic audit reports.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
