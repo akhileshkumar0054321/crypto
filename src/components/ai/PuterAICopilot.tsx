@@ -104,7 +104,7 @@ export function PuterAICopilot() {
       role: "assistant",
       content:
         "👋 Welcome! I am your **cryptoVision App Assistant & Support Guide** powered by Puter.js.\n\nI can help you:\n- 🧭 **Navigate the platform** & find tools\n- 🛡️ **Interpret Risk Scores (0–100)** & forensic metrics\n- 💼 **Manage your Portfolio & calculate VaR**\n- 🚨 **Set up Threat Wire alerts**\n- 📊 **Inspect Candlestick Charts & Order Books**\n- 🔧 **Troubleshoot any issues with the app**\n\nClick any topic below or ask me a question!",
-      timestamp: Date.now(),
+      timestamp: 0,
     },
   ]);
 

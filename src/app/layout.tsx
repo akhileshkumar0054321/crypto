@@ -15,11 +15,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Puter.js v2 SDK for browser-level AI model routing and Cloud KV persistence */}
-        <Script src="https://js.puter.com/v2/" strategy="afterInteractive" />
-      </head>
-      <body className="bg-[#08090e] text-slate-100 antialiased min-h-screen">
+      <body className="bg-[#08090e] text-slate-100 antialiased min-h-screen" suppressHydrationWarning>
+        <Script src="https://js.puter.com/v2/" strategy="lazyOnload" />
         <Providers>
           <div className="flex flex-col min-h-screen overflow-x-hidden bg-[#08090e]">
             <PriceTicker />
