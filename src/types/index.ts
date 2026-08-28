@@ -219,3 +219,115 @@ export interface DexTrendingCoin {
     polarity: number;
   };
 }
+
+// ── DeFi Intelligence Data Types ─────────────────────────────────────────
+export interface DefiProtocol {
+  id: string;
+  name: string;
+  symbol: string;
+  category: string;
+  tvl: number;
+  change_1d: number;
+  change_7d: number;
+  change_1m?: number;
+  chains: string[];
+  mcap?: number;
+  mcapTvlRatio?: number;
+  logo?: string;
+  url?: string;
+  audits?: string;
+  audit_note?: string;
+  forkedFrom?: string[];
+  gecko_id?: string;
+  slug?: string;
+}
+
+export interface DefiChain {
+  gecko_id?: string;
+  tvl: number;
+  tokenSymbol?: string;
+  name: string;
+  change_1d: number;
+  change_7d: number;
+  change_1m?: number;
+  protocolsCount?: number;
+  dominance?: number;
+  icon?: string;
+}
+
+export interface DefiYieldPool {
+  pool: string;
+  project: string;
+  symbol: string;
+  tvlUsd: number;
+  apy: number;
+  apyBase?: number;
+  apyReward?: number;
+  chain: string;
+  stablecoin: boolean;
+  ilRisk: "no" | "yes" | "low";
+  exposure?: string;
+  predictedClass?: string;
+  predictedProbability?: number;
+}
+
+export interface DefiDexVolume {
+  name: string;
+  displayName: string;
+  dailyVolume: number;
+  totalVolume24h?: number;
+  change_1d: number;
+  change_7d: number;
+  chains: string[];
+  marketShare: number;
+  logo?: string;
+  category?: string;
+}
+
+export interface DefiFeeRevenue {
+  name: string;
+  displayName: string;
+  category: string;
+  dailyFees: number;
+  dailyRevenue: number;
+  change_1d: number;
+  change_7d: number;
+  chains: string[];
+  logo?: string;
+}
+
+export interface DefiStablecoin {
+  id: string;
+  name: string;
+  symbol: string;
+  pegType: string;
+  pegMechanism: string;
+  price: number;
+  circulating: number;
+  circulatingPrevDay?: number;
+  change_1d: number;
+  change_7d: number;
+  chains: string[];
+  depegRisk: "LOW" | "MODERATE" | "HIGH";
+  depegDistancePct: number;
+  logo?: string;
+}
+
+export interface DefiOverviewData {
+  totalTvl: number;
+  tvlChange24h: number;
+  totalDexVolume24h: number;
+  dexVolumeChange24h: number;
+  totalFees24h: number;
+  totalRevenue24h: number;
+  totalStablecoinMcap: number;
+  stablecoinChange24h: number;
+  topChains: DefiChain[];
+  topProtocols: DefiProtocol[];
+  topYields: DefiYieldPool[];
+  topDexes: DefiDexVolume[];
+  topFees: DefiFeeRevenue[];
+  stablecoins: DefiStablecoin[];
+  lastUpdated: string;
+}
+

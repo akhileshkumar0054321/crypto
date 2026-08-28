@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { coinApi } from "@/lib/api";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
+import { useUserPlan } from "@/lib/context/UserPlanContext";
 import {
   Search,
   ChevronDown,
@@ -26,10 +27,12 @@ import {
   CheckCircle2,
   FileText,
   Flame,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { CalendarModal } from "@/components/calendar/CalendarModal";
 
 export function Navbar() {
   const router = useRouter();
@@ -39,17 +42,16 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [learnModalOpen, setLearnModalOpen] = useState(false);
-  const [newsletterModalOpen, setNewsletterModalOpen] = useState(false);
+  const [calendarModalOpen, setCalendarModalOpen] = useState(false);
   const [addPortfolioModalOpen, setAddPortfolioModalOpen] = useState(false);
   const [importType, setImportType] = useState<"api" | "wallet">("wallet");
   const [importCredential, setImportCredential] = useState("");
   const [importSuccess, setImportSuccess] = useState(false);
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navRef = useRef<HTMLElement>(null);
 
   const { isLive } = useLiveMarket();
+  const { currentPlan } = useUserPlan();
 
   useEffect(() => {
     const handleOpenAddPortfolio = () => setAddPortfolioModalOpen(true);
@@ -309,22 +311,24 @@ export function Navbar() {
 
             {/* DeFi */}
             <Link
-              href="/portfolio"
-              className={`transition-colors hover:text-white ${
-                path === "/portfolio" ? "text-white font-medium" : ""
+              href="/defi"
+              className={`transition-colors hover:text-white flex items-center gap-1 ${
+                path === "/defi" ? "text-white font-medium" : ""
               }`}
             >
-              DeFi
+              <span>DeFi</span>
+              <span className="text-[9px] bg-emerald-500/20 text-emerald-300 font-mono px-1 py-0.2 rounded font-bold">LIVE</span>
             </Link>
 
-            {/* Learn */}
-            <button
-              type="button"
-              onClick={() => setLearnModalOpen(true)}
-              className="transition-colors hover:text-white cursor-pointer"
+            {/* About */}
+            <Link
+              href="/learn"
+              className={`transition-colors hover:text-white ${
+                path === "/learn" || path === "/about" ? "text-white font-medium" : ""
+              }`}
             >
-              Learn
-            </button>
+              About
+            </Link>
 
             {/* Tools ˅ */}
             <div className="relative">
@@ -399,48 +403,6 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Account ˅ */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveDropdown(activeDropdown === "account" ? null : "account")
-                }
-                className={`flex items-center gap-1 transition-colors hover:text-white cursor-pointer ${
-                  activeDropdown === "account" || path === "/settings"
-                    ? "text-white font-medium"
-                    : ""
-                }`}
-              >
-                <span>Account</span>
-                <ChevronDown size={12} className="text-slate-400 stroke-[2] translate-y-[0.5px]" />
-              </button>
-
-              {activeDropdown === "account" && (
-                <div className="absolute top-8 left-0 w-56 bg-[#0d121c] border border-slate-800 rounded-xl shadow-2xl p-2 z-50 animate-fade-in space-y-1">
-                  <Link
-                    href="/settings"
-                    onClick={() => setActiveDropdown(null)}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
-                  >
-                    <ShieldCheck size={14} className="text-blue-400" />
-                    <span>Enclave Profile & Node</span>
-                  </Link>
-                  <Link
-                    href="/pricing"
-                    onClick={() => setActiveDropdown(null)}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-800/80 transition text-slate-200 text-xs"
-                  >
-                    <div className="flex items-center gap-2">
-                      <CreditCard size={14} className="text-indigo-400" />
-                      <span>Subscription & Tiers</span>
-                    </div>
-                    <span className="text-[10px] bg-blue-600/30 text-blue-300 px-1.5 py-0.5 rounded font-bold">PRO</span>
-                  </Link>
-                </div>
-              )}
-            </div>
-
             {/* Pricing */}
             <Link
               href="/pricing"
@@ -450,15 +412,6 @@ export function Navbar() {
             >
               Pricing
             </Link>
-
-            {/* Newsletters - Styled as dark pill button matching image */}
-            <button
-              type="button"
-              onClick={() => setNewsletterModalOpen(true)}
-              className="bg-[#121722] hover:bg-[#182030] px-3 py-1 rounded-lg border border-slate-700/60 text-slate-200 hover:text-white transition font-medium text-[13px] cursor-pointer"
-            >
-              Newsletters
-            </button>
           </nav>
         </div>
 
@@ -588,12 +541,33 @@ export function Navbar() {
             </Link>
 
             <Link
+              href="/defi"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-semibold flex items-center justify-between hover:bg-emerald-900/50"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} className="text-emerald-400" />
+                <span>DeFi Analytics Hub</span>
+              </div>
+              <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">LIVE</span>
+            </Link>
+
+            <Link
+              href="/learn"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2.5 rounded-lg bg-slate-900/80 text-slate-200 font-semibold flex items-center gap-2 hover:bg-slate-800"
+            >
+              <BookOpen size={14} className="text-blue-400" />
+              <span>About & Mission</span>
+            </Link>
+
+            <Link
               href="/portfolio"
               onClick={() => setMobileMenuOpen(false)}
               className="p-2.5 rounded-lg bg-slate-900/80 text-slate-200 font-semibold flex items-center gap-2 hover:bg-slate-800"
             >
               <Briefcase size={14} className="text-cyan-400" />
-              <span>DeFi Portfolio</span>
+              <span>Portfolio & Simulator</span>
             </Link>
 
             <Link
@@ -772,7 +746,6 @@ export function Navbar() {
         </div>
       )}
 
-      {/* ── Newsletter Subscribe Modal ──────────────────────────────────────── */}
       {/* ── Add Portfolio Import Modal ──────────────────────────────────────── */}
       {addPortfolioModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">

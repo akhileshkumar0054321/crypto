@@ -5,8 +5,6 @@ import { useState, useEffect } from "react";
 import { ArrowUp, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -20,16 +18,6 @@ export function Footer() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !email.includes("@")) return;
-    setSubscribed(true);
-    setTimeout(() => {
-      setEmail("");
-      setSubscribed(false);
-    }, 4000);
-  };
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -46,8 +34,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-          {/* Left Brand & Newsletter Column (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* Left Brand Column (4 cols) */}
+          <div className="lg:col-span-4 space-y-5">
             {/* Logo */}
             <Link href="/" className="inline-flex items-baseline group select-none">
               <span className="text-2xl font-light text-white tracking-tight">crypto</span>
@@ -61,40 +49,23 @@ export function Footer() {
               Real-time cryptocurrency intelligence, live risk radar, and institutional blockchain forensics aggregated from 300+ trusted global market sources.
             </p>
 
-            {/* Subscribe to updates */}
-            <div className="space-y-3 pt-2">
-              <label
-                htmlFor="footer-subscribe-email"
-                className="block text-xs font-bold text-slate-200 uppercase tracking-wider"
-              >
-                Subscribe to Daily Intelligence
-              </label>
-              <form onSubmit={handleSubscribe} className="flex items-center gap-2 max-w-sm">
-                <input
-                  id="footer-subscribe-email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-[#0d121f] border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                />
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm transition flex-shrink-0 shadow-md shadow-blue-500/20 active:scale-95 cursor-pointer"
-                >
-                  {subscribed ? "Subscribed" : "Subscribe"}
-                </button>
-              </form>
-              {subscribed && (
-                <p className="text-emerald-400 text-xs flex items-center gap-1.5 pt-1 animate-fade-in font-medium">
-                  <CheckCircle2 size={13} />
-                  You are subscribed to the daily cryptocurrency intelligence dispatch!
-                </p>
-              )}
+            {/* Institutional Platform Status */}
+            <div className="p-3.5 rounded-xl bg-[#0b101c] border border-slate-800/80 space-y-2 max-w-sm">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-medium">Surveillance Telemetry:</span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1.5 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  OPERATIONAL
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-800/50">
+                <span className="text-slate-400 font-medium">Enclave Latency:</span>
+                <span className="text-slate-200 font-mono font-bold">sub-15ms</span>
+              </div>
             </div>
 
             {/* Social Icons */}
-            <div className="pt-2">
+            <div className="pt-1">
               <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2.5">
                 Join our Global Community
               </p>
@@ -178,6 +149,11 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-white font-bold text-xs tracking-wider uppercase">MARKETS</h4>
             <ul className="space-y-2 text-xs">
+              <li>
+                <Link href="/defi" className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 transition">
+                  <span>&rarr; DeFi Intelligence Hub</span>
+                </Link>
+              </li>
               <li><Link href="/" className="hover:text-white transition">Overview</Link></li>
               <li><Link href="/risk-explorer" className="hover:text-white transition">Intelligence</Link></li>
               <li><Link href="/risk-explorer" className="hover:text-white transition">Fear & Greed</Link></li>
@@ -186,8 +162,8 @@ export function Footer() {
               <li><Link href="/alerts" className="hover:text-white transition">Gas Tracker</Link></li>
               <li><Link href="/risk-explorer" className="hover:text-white transition">Token Unlocks</Link></li>
               <li><Link href="/portfolio" className="hover:text-white transition">Derivatives</Link></li>
-              <li><Link href="/risk-explorer" className="hover:text-white transition">Stablecoins</Link></li>
-              <li><Link href="/risk-explorer" className="hover:text-white transition">L2 / Rollups</Link></li>
+              <li><Link href="/defi" className="hover:text-white transition">Stablecoins</Link></li>
+              <li><Link href="/defi" className="hover:text-white transition">L2 / Chains TVL</Link></li>
               <li><Link href="/risk-explorer" className="hover:text-white transition">Whales</Link></li>
               <li><Link href="/" className="hover:text-white transition">Exchanges</Link></li>
             </ul>
@@ -197,11 +173,16 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-white font-bold text-xs tracking-wider uppercase">TOOLS</h4>
             <ul className="space-y-2 text-xs">
+              <li>
+                <Link href="/defi" className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 transition">
+                  <span>&rarr; Yield & IL Calculator</span>
+                </Link>
+              </li>
               <li><Link href="/docs" className="hover:text-white transition">Platform Docs</Link></li>
               <li><Link href="/pricing" className="hover:text-white transition">Widget Builder</Link></li>
               <li><Link href="/news" className="hover:text-white transition">Sources</Link></li>
               <li><Link href="/about" className="hover:text-white transition">Authors</Link></li>
-              <li><Link href="/portfolio" className="hover:text-white transition">Calculator</Link></li>
+              <li><Link href="/defi" className="hover:text-white transition">DeFi Calculator</Link></li>
               <li><Link href="/risk-explorer" className="hover:text-white transition">Compare</Link></li>
               <li><Link href="/news" className="hover:text-white transition">RSS Feed</Link></li>
               <li><Link href="/portfolio" className="hover:text-white transition">Watchlist</Link></li>
@@ -217,16 +198,16 @@ export function Footer() {
           <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-white font-bold text-xs tracking-wider uppercase">COMPANY</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="/about" className="hover:text-white transition">About</Link></li>
-              <li><Link href="/about" className="hover:text-white transition">Team</Link></li>
-              <li><Link href="/about" className="hover:text-white transition">Contact</Link></li>
+              <li><Link href="/learn" className="hover:text-white transition">About & Mission</Link></li>
+              <li><Link href="/learn#features" className="hover:text-white transition">Features & Specs</Link></li>
+              <li><Link href="/learn#architecture" className="hover:text-white transition">System Architecture</Link></li>
               <li><Link href="/pricing" className="hover:text-white transition">Pricing</Link></li>
               <li><Link href="/docs" className="hover:text-white transition">Editorial Policy</Link></li>
               <li><Link href="/docs" className="hover:text-white transition">Ethics</Link></li>
               <li><Link href="/docs" className="hover:text-white transition">Privacy Policy</Link></li>
               <li><Link href="/docs" className="hover:text-white transition">Terms of Service</Link></li>
-              <li><Link href="/docs" className="hover:text-white transition">Learn</Link></li>
-              <li><Link href="/news" className="hover:text-white transition">Newsletters</Link></li>
+              <li><Link href="/learn" className="hover:text-white transition">Capabilities Guide</Link></li>
+              <li><Link href="/alerts" className="hover:text-white transition">Threat Radar</Link></li>
               <li><Link href="/news" className="hover:text-white transition">Blog</Link></li>
               <li><Link href="/" className="hover:text-white transition">System Status</Link></li>
               <li><Link href="/pricing" className="hover:text-white transition">Advertise</Link></li>

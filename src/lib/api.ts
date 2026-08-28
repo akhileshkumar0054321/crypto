@@ -86,6 +86,30 @@ export const dexScreenerApi = {
   scanToken: (query: string) => api.post("/api/dexscreener/scan", { query }),
 };
 
+export const defiApi = {
+  getOverview: () => api.get("/api/defi/overview"),
+  getProtocols: (category?: string, chain?: string) => {
+    const params = new URLSearchParams();
+    if (category) params.append("category", category);
+    if (chain) params.append("chain", chain);
+    const qs = params.toString();
+    return api.get(`/api/defi/protocols${qs ? `?${qs}` : ""}`);
+  },
+  getChains: () => api.get("/api/defi/chains"),
+  getYields: (stableOnly = false, chain?: string, minTvl?: number) => {
+    const params = new URLSearchParams();
+    if (stableOnly) params.append("stableOnly", "true");
+    if (chain) params.append("chain", chain);
+    if (minTvl) params.append("minTvl", minTvl.toString());
+    const qs = params.toString();
+    return api.get(`/api/defi/yields${qs ? `?${qs}` : ""}`);
+  },
+  getDexs: () => api.get("/api/defi/dexs"),
+  getFees: () => api.get("/api/defi/fees"),
+  getStablecoins: () => api.get("/api/defi/stablecoins"),
+};
+
+
 export const alertApi = {
   getAll:  ()                                 => api.get("/api/alerts"),
   create:  (data: Record<string, unknown>)    => api.post("/api/alerts", data),

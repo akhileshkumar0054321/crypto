@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { coinApi } from "@/lib/api";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
+import { CryptoFearAndGreedMeter } from "@/components/ui/CryptoFearAndGreedMeter";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -55,15 +56,24 @@ export default function MarketIntelligencePage() {
       {/* ── Top 4 Stat Cards ────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Sentiment Card */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-2 shadow-xl backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <Sparkles size={14} className="text-blue-400" />
-            <span>Sentiment</span>
+        <div
+          onClick={() => setActiveToolModal("fear_greed")}
+          className="bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-amber-500/40 rounded-2xl p-5 space-y-2 shadow-xl backdrop-blur-sm transition cursor-pointer group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-slate-400 group-hover:text-amber-400 transition text-xs font-bold uppercase tracking-wider">
+              <Sparkles size={14} className="text-amber-400" />
+              <span>Fear & Greed</span>
+            </div>
+            <span className="text-[10px] text-slate-500 group-hover:text-slate-300 font-mono flex items-center gap-1">
+              View Meter <ArrowRight size={10} />
+            </span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold font-mono text-white">68</span>
+            <span className="text-3xl font-extrabold font-mono text-emerald-400">73</span>
+            <span className="text-xs text-slate-400 font-bold">/ 100</span>
           </div>
-          <p className="text-emerald-400 text-xs font-bold font-mono">Bullish</p>
+          <p className="text-emerald-400 text-xs font-bold font-mono">Greed (Caution)</p>
         </div>
 
         {/* Bullish Card */}
@@ -412,42 +422,75 @@ export default function MarketIntelligencePage() {
                     </p>
                   </div>
 
-                  {/* Gauge & Context Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Gauge Card (2 cols) */}
-                    <div className="md:col-span-2 p-6 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center text-center relative overflow-hidden space-y-4">
-                      {/* Semi-circular gauge visual */}
-                      <div className="relative w-64 h-32 overflow-hidden flex items-end justify-center">
-                        <div className="absolute w-64 h-64 rounded-full border-[20px] border-slate-800 box-border border-t-emerald-500 border-r-emerald-500 border-l-rose-500 border-b-transparent transform -rotate-45" />
-                        <div className="absolute bottom-0 text-center pb-2">
-                          <span className="text-4xl sm:text-5xl font-black font-mono text-emerald-400 tracking-tight">73</span>
-                          <p className="text-sm font-extrabold text-emerald-300 uppercase tracking-widest mt-1">Greed</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                        <span>Caution: Market Approaching Extreme Greed Territory</span>
-                      </div>
+                  {/* Fear & Greed Meter & Context Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    {/* Exact Fear & Greed Speedometer Meter */}
+                    <div className="lg:col-span-7 flex justify-center">
+                      <CryptoFearAndGreedMeter
+                        score={73}
+                        label="Greed"
+                        nextUpdate="Next update: 72371"
+                        advice="Elevated greed can signal an overheated market"
+                        badgeLabel="Caution"
+                        interactive={true}
+                        showControls={true}
+                        className="w-full"
+                      />
                     </div>
 
                     {/* Context & Trend Column */}
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-1">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Market Context</h4>
-                        <p className="text-[11px] text-slate-400">Spot BTC ETF Inflows: +$412M</p>
-                        <p className="text-[11px] text-slate-400">Derivatives Funding: +0.018%</p>
+                    <div className="lg:col-span-5 space-y-4">
+                      <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                          <Activity size={14} className="text-blue-400" />
+                          <span>Real-Time Market Context</span>
+                        </h4>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex justify-between py-1.5 border-b border-slate-900">
+                            <span className="text-slate-400">Spot BTC ETF Net Inflows</span>
+                            <span className="font-mono font-bold text-emerald-400">+$412.8M</span>
+                          </div>
+                          <div className="flex justify-between py-1.5 border-b border-slate-900">
+                            <span className="text-slate-400">Perp Funding Rate (Annualized)</span>
+                            <span className="font-mono font-bold text-amber-400">+18.4%</span>
+                          </div>
+                          <div className="flex justify-between py-1.5 border-b border-slate-900">
+                            <span className="text-slate-400">24h Liquidations (Shorts/Longs)</span>
+                            <span className="font-mono font-bold text-slate-200">$184M / $62M</span>
+                          </div>
+                          <div className="flex justify-between py-1.5">
+                            <span className="text-slate-400">Whale Stablecoin Reserves</span>
+                            <span className="font-mono font-bold text-cyan-400">Expanding</span>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Trend</h4>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-slate-400 text-[11px]">7-day avg</span>
-                          <span className="text-lg font-mono font-bold text-white">70</span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-slate-400 text-[11px]">7d change</span>
-                          <span className="text-emerald-400 font-mono font-bold">+2</span>
+                      <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                          <TrendingUp size={14} className="text-emerald-400" />
+                          <span>Historical Benchmarks</span>
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2 text-center">
+                          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p className="text-[10px] text-slate-400">Yesterday</p>
+                            <p className="text-lg font-mono font-bold text-emerald-400">71</p>
+                            <p className="text-[10px] text-slate-500">Greed</p>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p className="text-[10px] text-slate-400">Last Week</p>
+                            <p className="text-lg font-mono font-bold text-emerald-400">68</p>
+                            <p className="text-[10px] text-slate-500">Greed</p>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p className="text-[10px] text-slate-400">Last Month</p>
+                            <p className="text-lg font-mono font-bold text-yellow-400">52</p>
+                            <p className="text-[10px] text-slate-500">Neutral</p>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p className="text-[10px] text-slate-400">Year High</p>
+                            <p className="text-lg font-mono font-bold text-emerald-300">90</p>
+                            <p className="text-[10px] text-slate-500">Extreme Greed</p>
+                          </div>
                         </div>
                       </div>
                     </div>

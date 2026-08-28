@@ -28,6 +28,7 @@ import { NewsImpactModal } from "@/components/news/NewsImpactModal";
 import { RealtimeCoinMiniBarGraph } from "@/components/charts/RealtimeCoinMiniBarGraph";
 import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartModal";
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
+import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
 import { NewsItem } from "@/types";
 
 const riskBadge = (score: number) => {
@@ -53,6 +54,9 @@ export default function DashboardPage() {
   const [selectedAnalysisCoin, setSelectedAnalysisCoin] = useState<any | null>(null);
   const [radarSelectedCoinId, setRadarSelectedCoinId] = useState<string>("");
   const [displayCount, setDisplayCount] = useState<number>(50);
+  const [radarViewMode, setRadarViewMode] = useState<"table" | "tradingview">("table");
+  const [radarActiveTvCoinId, setRadarActiveTvCoinId] = useState<string>("bitcoin");
+  const [radarTvInterval, setRadarTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
 
   // Read URL filter query parameter on mount
   useEffect(() => {
@@ -231,6 +235,14 @@ export default function DashboardPage() {
           {/* Popular Fast Scans */}
           <div className="flex items-center gap-2 mt-4 flex-wrap text-xs">
             <span className="text-slate-400 text-xs font-semibold">Popular Scans:</span>
+            <Link
+              href="/defi"
+              className="px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-emerald-500/10"
+            >
+              <Layers size={13} className="text-emerald-400" />
+              <span>DeFi Intelligence Hub</span>
+              <span className="text-[9px] bg-emerald-400 text-slate-950 font-bold px-1 rounded">LIVE</span>
+            </Link>
             {[
               { label: "Bitcoin (BTC)", id: "bitcoin" },
               { label: "Ethereum (ETH)", id: "ethereum" },
@@ -359,12 +371,44 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Coin Select & Full AI Analyse Button */}
-            <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Toggle & Quick Coin Select */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Radar View Mode Switcher */}
+              <div className="flex items-center gap-1 bg-[#0b101e] p-1 rounded-xl border border-slate-700/80">
+                <button
+                  type="button"
+                  onClick={() => setRadarViewMode("table")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    radarViewMode === "table"
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Filter size={13} />
+                  <span>Radar Table</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRadarViewMode("tradingview")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    radarViewMode === "tradingview"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <BarChart2 size={13} className="text-blue-400" />
+                  <span>Live Chart</span>
+                </button>
+              </div>
+
+              {/* Quick Coin Select & Full AI Analyse Button */}
               <div className="flex items-center gap-1.5 bg-[#0e1322] rounded-xl p-1.5 border border-slate-700/80">
                 <select
                   value={radarSelectedCoinId}
-                  onChange={(e) => setRadarSelectedCoinId(e.target.value)}
+                  onChange={(e) => {
+                    setRadarSelectedCoinId(e.target.value);
+                    if (e.target.value) setRadarActiveTvCoinId(e.target.value);
+                  }}
                   className="bg-transparent border-0 text-xs sm:text-sm text-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 max-w-[160px] sm:max-w-[200px] truncate"
                 >
                   <option value="" className="bg-slate-900 text-slate-300">Choose coin to audit...</option>
@@ -443,15 +487,227 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Scrollable Data Table Container */}
-        {coinsLoading ? (
-          <div className="p-8 space-y-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="h-14 bg-slate-900/60 rounded-xl animate-pulse" />
-            ))}
+        {/* View Mode: TradingView Live Radar Terminal vs Data Table */}
+        {radarViewMode === "tradingview" ? (
+          <div className="p-4 sm:p-6 space-y-4 bg-[#090d18]">
+            {/* Quick Coin Carousel / Switcher Pills for Radar Coins */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span className="font-bold uppercase tracking-wider text-[11px] text-slate-400 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  Select Radar Coin for Real-Time TradingView Stream:
+                </span>
+                <span className="font-mono text-slate-500">{filteredCoins.length} Assets Tracked</span>
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                {filteredCoins.slice(0, 20).map((coinItem: any) => {
+                  const itemLive = getLiveCoin(coinItem.coin_id, coinItem.price_usd || 100, coinItem.price_change_24h || 0);
+                  const itemPrice = itemLive.price || coinItem.price_usd || 0;
+                  const itemChg = itemLive.change24h ?? (coinItem.price_change_24h || 0);
+                  const isItemUp = itemChg >= 0;
+                  const isSelected = (radarActiveTvCoinId || "bitcoin") === coinItem.coin_id;
+
+                  return (
+                    <button
+                      key={coinItem.coin_id}
+                      type="button"
+                      onClick={() => setRadarActiveTvCoinId(coinItem.coin_id)}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition whitespace-nowrap cursor-pointer border ${
+                        isSelected
+                          ? "bg-blue-600/20 border-blue-500 shadow-lg shadow-blue-500/15 text-white"
+                          : "bg-[#0d1222] border-slate-800/80 text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      }`}
+                    >
+                      {coinItem.image_url ? (
+                        <img
+                          src={coinItem.image_url}
+                          alt={coinItem.symbol}
+                          className="w-5 h-5 rounded-full flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold text-[9px] text-blue-400">
+                          {coinItem.symbol?.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-white">{coinItem.symbol?.toUpperCase()}</span>
+                          <span
+                            className={`text-[10px] font-mono font-bold ${
+                              isItemUp ? "text-emerald-400" : "text-rose-400"
+                            }`}
+                          >
+                            {isItemUp ? "+" : ""}{itemChg.toFixed(1)}%
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-slate-400">
+                          ${itemPrice >= 1 ? itemPrice.toLocaleString("en-US", { maximumFractionDigits: 2 }) : itemPrice.toFixed(4)}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Active Selected Coin Terminal Frame */}
+            {(() => {
+              const activeCoin = coins.find((c: any) => c.coin_id === radarActiveTvCoinId) || filteredCoins[0] || coins[0] || {
+                coin_id: "bitcoin",
+                name: "Bitcoin",
+                symbol: "BTC",
+                price_usd: 88000,
+                price_change_24h: 2.5,
+              };
+              const activeLive = getLiveCoin(activeCoin.coin_id, activeCoin.price_usd || 100, activeCoin.price_change_24h || 0);
+              const activePrice = activeLive.price || activeCoin.price_usd || 0;
+              const activeChg = activeLive.change24h ?? (activeCoin.price_change_24h || 0);
+              const isActiveUp = activeChg >= 0;
+              const tvSymbol = resolveTradingViewSymbol(activeCoin.symbol, activeCoin.coin_id);
+
+              return (
+                <div className="bg-[#070b14] border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+                  {/* Top Bar for Selected Coin */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-[#0a0f1d] border-b border-slate-800">
+                    <div className="flex items-center gap-3">
+                      {activeCoin.image_url ? (
+                        <img
+                          src={activeCoin.image_url}
+                          alt={activeCoin.name}
+                          className="w-9 h-9 rounded-full border border-white/10"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center font-bold text-xs text-blue-400">
+                          {activeCoin.symbol?.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-base font-extrabold text-white">{activeCoin.name}</h3>
+                          <span className="text-xs font-mono font-bold bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                            {activeCoin.symbol?.toUpperCase()}/USDT
+                          </span>
+                          <span className="text-[11px] font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                            TradingView Ticker: {tvSymbol}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400 font-mono">
+                          <span>Live Stream: </span>
+                          <span className="text-emerald-400 font-bold">Sub-Second WebSocket Feed</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price and Interval Controls */}
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <div className="text-right">
+                        <p className="text-xl font-extrabold font-mono text-white">
+                          ${activePrice >= 1 ? activePrice.toLocaleString("en-US", { maximumFractionDigits: 2 }) : activePrice.toFixed(6)}
+                        </p>
+                        <span
+                          className={`text-xs font-mono font-bold inline-flex items-center gap-1 ${
+                            isActiveUp ? "text-emerald-400" : "text-rose-400"
+                          }`}
+                        >
+                          {isActiveUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                          {isActiveUp ? "+" : ""}{activeChg.toFixed(2)}% (24h)
+                        </span>
+                      </div>
+
+                      {/* Timeframe selector */}
+                      <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+                        {[
+                          { label: "1m", val: "1" },
+                          { label: "5m", val: "5" },
+                          { label: "15m", val: "15" },
+                          { label: "1H", val: "60" },
+                          { label: "4H", val: "240" },
+                          { label: "1D", val: "D" },
+                          { label: "1W", val: "W" },
+                        ].map((tf) => (
+                          <button
+                            key={tf.val}
+                            type="button"
+                            onClick={() => setRadarTvInterval(tf.val as any)}
+                            className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition cursor-pointer ${
+                              radarTvInterval === tf.val
+                                ? "bg-blue-600 text-white shadow-xs"
+                                : "text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            {tf.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* The TradingView Advanced Real-Time Chart */}
+                  <div className="w-full h-[560px] bg-[#0A0E1A]">
+                    <TradingViewAdvancedWidget
+                      symbol={activeCoin.symbol}
+                      coinId={activeCoin.coin_id}
+                      coinName={activeCoin.name}
+                      interval={radarTvInterval}
+                      height="560px"
+                      width="100%"
+                      allowSymbolChange={true}
+                      hideSideToolbar={false}
+                      hideTopToolbar={false}
+                      hideLegend={false}
+                      hideVolume={false}
+                      theme="dark"
+                      backgroundColor="#0A0E1A"
+                    />
+                  </div>
+
+                  {/* Bottom Quick-Action Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-[#0a0f1d] border-t border-slate-800 text-xs">
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <span className="font-semibold text-slate-300">Features:</span>
+                      <span>• Real-Time Candlesticks</span>
+                      <span>• RSI / MACD / Bollinger</span>
+                      <span>• Built-in Drawing Tools</span>
+                      <span>• Instant Screenshot Save</span>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedAnalysisCoin({
+                            ...activeCoin,
+                            price_usd: activePrice,
+                            price_change_24h: activeChg,
+                          })
+                        }
+                        className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition cursor-pointer"
+                      >
+                        <Sparkles size={13} />
+                        <span>Run Full AI Forensic Audit on {activeCoin.name}</span>
+                      </button>
+
+                      <Link
+                        href={`/coin/${activeCoin.coin_id}`}
+                        className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-xs border border-slate-700 transition flex items-center gap-1.5"
+                      >
+                        <span>View Deep Profile</span>
+                        <ChevronRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
-        ) : (
-          <div className="overflow-x-auto max-h-[700px] overflow-y-auto scrollbar-thin">
+        ) : coinsLoading ? (
+          <div className="p-8 space-y-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div key={i} className="h-14 bg-slate-900/60 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto max-h-[700px] overflow-y-auto scrollbar-thin">
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-20 bg-[#0c101d] text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-800 shadow-sm">
                 <tr>

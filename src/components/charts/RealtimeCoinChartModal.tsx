@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
+import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
 
 export interface ChartModalProps {
   coin: {
@@ -59,6 +60,10 @@ interface CandleItem {
 
 export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
   const { getLiveCoin, liveTapeTrades, isLive } = useLiveMarket();
+  const [isFullScreen, setIsFullScreen] = useState(true);
+  const [showPatternGuide, setShowPatternGuide] = useState(false);
+  const [chartViewMode, setChartViewMode] = useState<"tradingview" | "tactical">("tradingview");
+  const [tvInterval, setTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
   const [timeframe, setTimeframe] = useState<Timeframe>("1m");
   const [chartStyle, setChartStyle] = useState<ChartStyle>("candlestick");
   const [isRecordingPaused, setIsRecordingPaused] = useState(false);
@@ -441,31 +446,39 @@ export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in"
+      className={`fixed inset-0 z-50 flex flex-col bg-[#070b14] text-slate-100 animate-fade-in ${
+        isFullScreen
+          ? "w-screen h-screen p-0"
+          : "items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md"
+      }`}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-6xl max-h-[95vh] bg-[#090d16] border border-slate-700/60 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100"
+        className={`relative bg-[#090d16] flex flex-col overflow-hidden text-slate-100 transition-all ${
+          isFullScreen
+            ? "w-full h-full border-0 rounded-none"
+            : "w-full max-w-7xl max-h-[96vh] border border-slate-700/60 rounded-2xl shadow-2xl"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Top Header & Live Recording Banner ─────────────────────────────── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 border-b border-white/[0.08] bg-slate-900/60">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-white/[0.08] bg-slate-900/90">
           <div className="flex items-center gap-3">
             {coin.image_url ? (
               <img
                 src={coin.image_url}
                 alt={coin.name}
-                className="w-8 h-8 rounded-full border border-white/10"
+                className="w-8 h-8 rounded-full border border-white/10 flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs">
+              <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0">
                 {coin.symbol.slice(0, 2).toUpperCase()}
               </div>
             )}
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold tracking-tight text-white">{coin.name}</h2>
-                <span className="text-xs font-mono font-bold text-slate-400 uppercase bg-slate-800 px-1.5 py-0.5 rounded">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base font-extrabold tracking-tight text-white">{coin.name}</h2>
+                <span className="text-xs font-mono font-bold text-slate-300 uppercase bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
                   {coin.symbol}/USDT
                 </span>
                 {/* Live Recording HUD Badge */}
@@ -481,31 +494,31 @@ export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
                       !isRecordingPaused ? "bg-rose-500 animate-ping" : "bg-amber-500"
                     }`}
                   />
-                  {!isRecordingPaused ? "● LIVE RECORDING" : "PAUSED"}
+                  {!isRecordingPaused ? "LIVE TICKS" : "PAUSED"}
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400 font-mono flex items-center gap-2 mt-0.5">
-                <span>Feed: {lastDataSource}</span>
+              <p className="text-[11px] text-slate-400 font-mono flex items-center gap-2 mt-0.5 flex-wrap">
+                <span className="text-blue-400">Stream: TradingView WebSocket</span>
                 <span>•</span>
-                <span>Tape: {recordedTicksCount} live ticks</span>
+                <span>Tape: {recordedTicksCount} ticks</span>
                 <span>•</span>
-                <span className="text-emerald-400">Duration: {fmtDuration(recordingSeconds)}</span>
+                <span className="text-emerald-400">Time Active: {fmtDuration(recordingSeconds)}</span>
               </p>
             </div>
           </div>
 
-          {/* Current Live Price & 24h Action */}
-          <div className="flex items-center gap-4">
+          {/* Current Live Price, Candlestick Pattern Guide & Fullscreen Controls */}
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
             <div className="text-right">
               <div className="flex items-center justify-end gap-1.5">
-                <span className="text-2xl font-black font-mono tracking-tight text-white">
+                <span className="text-xl sm:text-2xl font-black font-mono tracking-tight text-white">
                   {fmtPrice(currentPrice)}
                 </span>
                 <span
-                  className={`inline-flex items-center text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                  className={`inline-flex items-center text-xs font-mono font-bold px-2 py-0.5 rounded ${
                     isUp
-                      ? "bg-emerald-500/20 text-emerald-300"
-                      : "bg-rose-500/20 text-rose-300"
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                      : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
                   }`}
                 >
                   {isUp ? <TrendingUp size={12} className="mr-0.5" /> : <TrendingDown size={12} className="mr-0.5" />}
@@ -519,18 +532,167 @@ export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
               </p>
             </div>
 
+            {/* Candlestick Patterns Guide Toggle */}
+            <button
+              onClick={() => setShowPatternGuide((prev) => !prev)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                showPatternGuide
+                  ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow-md shadow-amber-500/15"
+                  : "bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-300 hover:text-white"
+              }`}
+              title="Toggle Candlestick Patterns Reference Guide"
+            >
+              <Sparkles size={13} className="text-amber-400" />
+              <span className="hidden sm:inline">Candle Patterns Guide</span>
+              <span className="sm:hidden">Patterns</span>
+            </button>
+
+            {/* Fullscreen / Full Page Expansion Toggle */}
+            <button
+              onClick={() => setIsFullScreen((prev) => !prev)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+                isFullScreen
+                  ? "bg-blue-600/20 border-blue-500 text-blue-300"
+                  : "bg-slate-800/80 hover:bg-slate-700 border-slate-700 text-slate-300 hover:text-white"
+              }`}
+              title={isFullScreen ? "Exit Full Page View" : "Expand to Full Page"}
+            >
+              {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              <span className="hidden md:inline">{isFullScreen ? "Exit Full Page" : "Full Page Mode"}</span>
+            </button>
+
+            {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition cursor-pointer"
               title="Close chart"
             >
-              <X size={20} />
+              <X size={22} />
             </button>
           </div>
         </div>
 
-        {/* ── Toolbar: Timeframe, Chart Style & Indicator Toggles ─────────────── */}
-        <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 bg-[#0b101c] border-b border-white/[0.06] text-xs">
+        {/* ── Subheader Bar: Live Chart Badge & Time Intervals ── */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-2.5 bg-[#0a0f1d] border-b border-white/[0.08]">
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-md shadow-blue-500/25 border border-blue-400/30">
+              <BarChart2 size={14} className="text-blue-200" />
+              <span>Live Chart</span>
+            </div>
+            <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+              Pair: <strong className="text-blue-300">{resolveTradingViewSymbol(coin.symbol, coin.coin_id)}</strong>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
+              {[
+                { label: "1m", val: "1" },
+                { label: "5m", val: "5" },
+                { label: "15m", val: "15" },
+                { label: "1H", val: "60" },
+                { label: "4H", val: "240" },
+                { label: "1D", val: "D" },
+                { label: "1W", val: "W" },
+              ].map((item) => (
+                <button
+                  key={item.val}
+                  onClick={() => setTvInterval(item.val as any)}
+                  className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition cursor-pointer ${
+                    tvInterval === item.val
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Optional Collapsible Candlestick Pattern Recognition Guide ──────── */}
+        {showPatternGuide && (
+          <div className="bg-[#0b1020] border-b border-slate-800 p-3 sm:p-4 text-xs text-slate-300 animate-fade-in shadow-xl">
+            <div className="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Sparkles size={15} className="text-amber-400" />
+                <h4 className="font-extrabold text-white text-sm">Candlestick Patterns & Technical Formations Cheat Sheet</h4>
+              </div>
+              <span className="text-[11px] text-slate-400 font-mono">
+                Tip: Click <strong>&quot;Indicators&quot;</strong> on TradingView toolbar &amp; search <strong>&quot;All Candlestick Patterns&quot;</strong> for auto-detection!
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Bullish Patterns */}
+              <div className="bg-emerald-950/20 border border-emerald-500/25 rounded-xl p-3 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
+                  <TrendingUp size={13} />
+                  <span>Bullish Patterns (Upward Reversal)</span>
+                </div>
+                <ul className="space-y-1 text-[11px] text-slate-300">
+                  <li><strong className="text-emerald-300">• Hammer:</strong> Small body at top with long lower wick (2-3x body) signaling heavy buyer rejection of lower prices.</li>
+                  <li><strong className="text-emerald-300">• Bullish Engulfing:</strong> Green candle body completely engulfs prior red candle body.</li>
+                  <li><strong className="text-emerald-300">• Morning Star:</strong> 3-candle pattern: Tall red + small gap candle + tall green candle showing momentum shift.</li>
+                  <li><strong className="text-emerald-300">• Three White Soldiers:</strong> 3 consecutive tall green candles with higher closes near the highs.</li>
+                </ul>
+              </div>
+
+              {/* Bearish Patterns */}
+              <div className="bg-rose-950/20 border border-rose-500/25 rounded-xl p-3 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-rose-400 font-bold uppercase tracking-wider text-[11px]">
+                  <TrendingDown size={13} />
+                  <span>Bearish Patterns (Downward Reversal)</span>
+                </div>
+                <ul className="space-y-1 text-[11px] text-slate-300">
+                  <li><strong className="text-rose-300">• Shooting Star:</strong> Small body at bottom with long upper wick rejecting resistance.</li>
+                  <li><strong className="text-rose-300">• Bearish Engulfing:</strong> Red candle body completely engulfs the previous green candle.</li>
+                  <li><strong className="text-rose-300">• Evening Star:</strong> 3-candle top reversal with small star followed by decisive red breakdown.</li>
+                  <li><strong className="text-rose-300">• Three Black Crows:</strong> 3 consecutive tall red candles confirming severe selloff pressure.</li>
+                </ul>
+              </div>
+
+              {/* Indecision & Reversal Signals */}
+              <div className="bg-blue-950/20 border border-blue-500/25 rounded-xl p-3 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-blue-400 font-bold uppercase tracking-wider text-[11px]">
+                  <Activity size={13} />
+                  <span>Indecision & Structure Patterns</span>
+                </div>
+                <ul className="space-y-1 text-[11px] text-slate-300">
+                  <li><strong className="text-blue-300">• Classic Doji:</strong> Open equals Close (cross shape), representing equilibrium/pause before breakout.</li>
+                  <li><strong className="text-blue-300">• Dragonfly / Gravestone:</strong> Long lower shadow (bullish) vs long upper shadow (bearish exhaustion).</li>
+                  <li><strong className="text-blue-300">• Bullish/Bearish Harami:</strong> Inside-bar candle indicating contraction before explosive expansion.</li>
+                  <li><strong className="text-blue-300">• Head & Shoulders:</strong> Classic distribution neckline break (look for left/head/right shoulders).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {chartViewMode === "tradingview" ? (
+          /* ── Full TradingView Advanced Real-Time Chart (Expanded to Full Height) ─── */
+          <div className="flex-1 w-full bg-[#0a0e1a] p-1 sm:p-2 flex flex-col min-h-0 h-full overflow-hidden">
+            <TradingViewAdvancedWidget
+              symbol={coin.symbol}
+              coinId={coin.coin_id}
+              coinName={coin.name}
+              interval={tvInterval}
+              height="100%"
+              width="100%"
+              allowSymbolChange={true}
+              hideSideToolbar={false}
+              hideTopToolbar={false}
+              hideLegend={false}
+              hideVolume={false}
+              theme="dark"
+              backgroundColor="#0a0e1a"
+            />
+          </div>
+        ) : (
+          <>
+            {/* ── Toolbar: Timeframe, Chart Style & Indicator Toggles ─────────────── */}
+            <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 bg-[#0b101c] border-b border-white/[0.06] text-xs">
           {/* Timeframe selector */}
           <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-800">
             {(["10s", "1m", "5m", "15m", "1h", "24h", "7d"] as Timeframe[]).map((tf) => (
@@ -1214,6 +1376,8 @@ export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
             </div>
           )}
         </div>
+        </>
+      )}
 
         {/* ── Bottom Modal Footer & Direct Forensics Link ────────────────────── */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-white/[0.08] bg-slate-900/80">

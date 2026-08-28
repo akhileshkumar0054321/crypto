@@ -45,6 +45,7 @@ import {
   Newspaper,
   Send,
   RefreshCw,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useMemo, useEffect } from "react";
@@ -52,7 +53,9 @@ import Link from "next/link";
 import { NewsImpactModal } from "@/components/news/NewsImpactModal";
 import { InteractiveNewsCard } from "@/components/news/InteractiveNewsCard";
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
+import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartModal";
 import { RealisticLiveExchangeGraph } from "@/components/charts/RealisticLiveExchangeGraph";
+import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
 import { NewsItem } from "@/types";
 
 const recBadge = (r?: string, viabilityScore = 50) => {
@@ -101,6 +104,9 @@ export default function CoinDetailPage() {
   const [customHeadlineInput, setCustomHeadlineInput] = useState<string>("");
   const [selectedNewsModal, setSelectedNewsModal] = useState<NewsItem | null>(null);
   const [showSixSectionAudit, setShowSixSectionAudit] = useState(false);
+  const [showFullPageChartModal, setShowFullPageChartModal] = useState(false);
+  const [coinChartViewMode, setCoinChartViewMode] = useState<"tradingview" | "historical">("tradingview");
+  const [coinTvInterval, setCoinTvInterval] = useState<"1" | "5" | "15" | "60" | "240" | "D" | "W">("D");
 
   // Live Market streaming hook
   const { getLiveCoin, isLive } = useLiveMarket();
@@ -492,76 +498,168 @@ export default function CoinDetailPage() {
       {activeTab === "overview" && (
         <div className="space-y-6">
           {/* Chart Card */}
-          <div className="card">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="card p-0 overflow-hidden bg-[#0a0e1a] border border-slate-800 rounded-2xl shadow-xl">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0c101d]">
               <div>
-                <h3 className="section-title">Live Price Action & Volatility Envelope</h3>
-                <p className="text-slate-500 text-xs mt-0.5">
-                  Sub-second live streaming candlestick corridor with support/resistance modeling
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-extrabold text-white">Live Price Action & Technical Chart</h3>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[10px] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
+                    TradingView Live
+                  </span>
+                </div>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  Sub-second live streaming candles, volume profiles, drawing tools, and multi-indicator technical analysis.
                 </p>
               </div>
-              <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
-                {[
-                  { label: "24H", days: 1 },
-                  { label: "7D", days: 7 },
-                  { label: "30D", days: 30 },
-                  { label: "90D", days: 90 },
-                ].map((tf) => (
+
+              {/* View Switcher & Controls */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => setShowFullPageChartModal(true)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md shadow-blue-500/20 cursor-pointer"
+                  title="Expand Candlestick Chart to Full Page Terminal"
+                >
+                  <Maximize2 size={13} />
+                  <span>Full Page Terminal</span>
+                </button>
+
+                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
                   <button
-                    key={tf.days}
-                    onClick={() => setTimeframe(tf.days)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
-                      timeframe === tf.days
-                        ? "bg-blue-600 text-white shadow-sm"
+                    onClick={() => setCoinChartViewMode("tradingview")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                      coinChartViewMode === "tradingview"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                         : "text-slate-400 hover:text-slate-200"
                     }`}
                   >
-                    {tf.label}
+                    <BarChart3 size={13} />
+                    <span>TradingView</span>
                   </button>
-                ))}
+                  <button
+                    onClick={() => setCoinChartViewMode("historical")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                      coinChartViewMode === "historical"
+                        ? "bg-slate-800 text-white shadow-md"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Activity size={13} />
+                    <span>Historical Envelope</span>
+                  </button>
+                </div>
+
+                {coinChartViewMode === "tradingview" ? (
+                  <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
+                    {[
+                      { label: "1m", val: "1" },
+                      { label: "5m", val: "5" },
+                      { label: "15m", val: "15" },
+                      { label: "1H", val: "60" },
+                      { label: "4H", val: "240" },
+                      { label: "1D", val: "D" },
+                      { label: "1W", val: "W" },
+                    ].map((tf) => (
+                      <button
+                        key={tf.val}
+                        onClick={() => setCoinTvInterval(tf.val as any)}
+                        className={`px-2.5 py-1 text-xs font-mono font-bold rounded transition ${
+                          coinTvInterval === tf.val
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        {tf.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
+                    {[
+                      { label: "24H", days: 1 },
+                      { label: "7D", days: 7 },
+                      { label: "30D", days: 30 },
+                      { label: "90D", days: 90 },
+                    ].map((tf) => (
+                      <button
+                        key={tf.days}
+                        onClick={() => setTimeframe(tf.days)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
+                          timeframe === tf.days
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        {tf.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
-            {chartData.length > 0 ? (
-              <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 11 }} />
-                    <YAxis
-                      domain={["auto", "auto"]}
-                      stroke="#64748b"
-                      tick={{ fontSize: 11 }}
-                      tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(1)}k` : `$${v}`)}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        background: "#0f172a",
-                        border: "1px solid #334155",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                      }}
-                      formatter={(val: any) => [`$${Number(val).toLocaleString()}`, "Price"]}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      fill="url(#priceGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+            {coinChartViewMode === "tradingview" ? (
+              <div className="w-full h-[540px] bg-[#0A0E1A]">
+                <TradingViewAdvancedWidget
+                  symbol={coin?.symbol || id}
+                  coinId={id}
+                  coinName={coin?.name || id}
+                  interval={coinTvInterval}
+                  height="540px"
+                  width="100%"
+                  allowSymbolChange={true}
+                  hideSideToolbar={false}
+                  hideTopToolbar={false}
+                  hideLegend={false}
+                  hideVolume={false}
+                  theme="dark"
+                  backgroundColor="#0A0E1A"
+                />
               </div>
             ) : (
-              <div className="h-64 flex items-center justify-center text-slate-500 text-xs">
-                Synchronizing on-chain candle points...
+              <div className="p-5">
+                {chartData.length > 0 ? (
+                  <div className="h-72 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                        <XAxis dataKey="date" stroke="#64748b" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          domain={["auto", "auto"]}
+                          stroke="#64748b"
+                          tick={{ fontSize: 11 }}
+                          tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(1)}k` : `$${v}`)}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            background: "#0f172a",
+                            border: "1px solid #334155",
+                            borderRadius: "8px",
+                            fontSize: "12px",
+                          }}
+                          formatter={(val: any) => [`$${Number(val).toLocaleString()}`, "Price"]}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="price"
+                          stroke="#3b82f6"
+                          strokeWidth={2}
+                          fill="url(#priceGradient)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="h-72 flex items-center justify-center text-slate-500 text-xs">
+                    Synchronizing on-chain candle points...
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1292,6 +1390,23 @@ export default function CoinDetailPage() {
             price_change_24h: displayChg,
           }}
           onClose={() => setShowSixSectionAudit(false)}
+        />
+      )}
+
+      {/* ── Full Page Candlestick Chart & Terminal Modal ───────────────────── */}
+      {showFullPageChartModal && coin && (
+        <RealtimeCoinChartModal
+          coin={{
+            coin_id: coin.coin_id || id,
+            name: coin.name || id,
+            symbol: coin.symbol || id,
+            price_usd: displayPrice,
+            price_change_24h: displayChg,
+            market_cap: coin.market_cap,
+            volume_24h: coin.volume_24h,
+            image_url: coin.image_url,
+          }}
+          onClose={() => setShowFullPageChartModal(false)}
         />
       )}
     </div>
