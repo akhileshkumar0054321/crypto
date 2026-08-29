@@ -34,6 +34,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { CalendarModal } from "@/components/calendar/CalendarModal";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 
 export function Navbar() {
   const router = useRouter();
@@ -675,9 +676,14 @@ export function Navbar() {
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/80 cursor-pointer transition border border-transparent hover:border-slate-700"
                   >
                     <div className="flex items-center gap-3">
-                      {c.image_url && (
-                        <img src={c.image_url} alt={c.name} className="w-6 h-6 rounded-full" />
-                      )}
+                      <CryptoAvatar
+                        coinId={c.coin_id}
+                        symbol={c.symbol}
+                        name={c.name}
+                        imageUrl={c.image_url}
+                        size="md"
+                        className="w-6 h-6"
+                      />
                       <div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-white text-xs font-bold">{c.name}</span>

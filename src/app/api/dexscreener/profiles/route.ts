@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dexScreenerService } from "@/lib/server/dexScreenerService";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const profiles = await dexScreenerService.fetchLatestProfiles();

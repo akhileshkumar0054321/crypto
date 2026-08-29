@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { coinApi } from "@/lib/api";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
 import { CryptoFearAndGreedMeter } from "@/components/ui/CryptoFearAndGreedMeter";
+import { TradingViewCryptoHeatmapWidget } from "@/components/charts/TradingViewCryptoHeatmapWidget";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -21,13 +22,20 @@ import {
   AlertTriangle,
   Clock,
   ArrowRight,
+  Maximize2,
+  Minimize2,
+  BarChart2,
+  Flame,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function MarketIntelligencePage() {
-  const [activeTab, setActiveTab] = useState<"signals" | "whales" | "narratives" | "anomalies">("narratives");
+  const [activeTab, setActiveTab] = useState<"heatmap" | "signals" | "whales" | "narratives" | "anomalies">("heatmap");
   const [searchTerm, setSearchTerm] = useState("");
   const [activeToolModal, setActiveToolModal] = useState<string | null>(null);
+  const [heatmapDataset, setHeatmapDataset] = useState<"Crypto" | "CryptoDeFi" | "CryptoAll">("Crypto");
+  const [heatmapBlockSize, setHeatmapBlockSize] = useState<"market_cap_calc" | "volume_24h_usd">("market_cap_calc");
+  const [isHeatmapExpanded, setIsHeatmapExpanded] = useState(false);
 
   const currentTime = "Updated 9:20:52 AM";
 
@@ -116,9 +124,10 @@ export default function MarketIntelligencePage() {
       {/* ── Filter Tabs & Main Content Grid ──────────────────────────────── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-800">
         {[
+          { id: "heatmap", label: "Market Heatmap (Live)", icon: Flame, badge: "TradingView" },
+          { id: "narratives", label: "Narratives (6)", icon: Layers },
           { id: "signals", label: "AI Signals (6)", icon: Zap },
           { id: "whales", label: "Whale Alerts (5)", icon: Eye },
-          { id: "narratives", label: "Narratives (6)", icon: Layers },
           { id: "anomalies", label: "Anomalies (4)", icon: AlertTriangle },
         ].map((tab) => {
           const IconComponent = tab.icon;
@@ -133,271 +142,460 @@ export default function MarketIntelligencePage() {
                   : "bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-800/80"
               }`}
             >
-              <IconComponent size={14} className={isActive ? "text-blue-400" : "text-slate-500"} />
+              <IconComponent size={14} className={isActive ? (tab.id === "heatmap" ? "text-amber-400" : "text-blue-400") : "text-slate-500"} />
               <span>{tab.label}</span>
+              {tab.badge && (
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  {tab.badge}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left 2 Cols: Dynamic Tab Content */}
-        <div className="lg:col-span-2 space-y-4">
-          {activeTab === "narratives" && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                <h2 className="text-base font-bold text-white flex items-center gap-2">
-                  <Layers size={18} className="text-blue-400" />
-                  <span>Trending Narratives</span>
-                </h2>
-                <span className="text-xs font-mono text-slate-400">6 Active Sectors</span>
-              </div>
-
-              {/* Narrative 1 */}
-              <div className="space-y-3 pb-5 border-b border-slate-800/80">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp size={16} className="text-emerald-400" />
-                    <h3 className="text-sm font-bold text-white">AI & Compute</h3>
-                  </div>
-                  <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    +18%
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  AI infrastructure tokens surging on new GPU compute demand and decentralized model training volume.
-                </p>
-                <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  {["RNDR", "TAO", "FET", "NEAR"].map((t) => (
-                    <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Narrative 2 */}
-              <div className="space-y-3 pb-5 border-b border-slate-800/80">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp size={16} className="text-emerald-400" />
-                    <h3 className="text-sm font-bold text-white">Real-World Assets</h3>
-                  </div>
-                  <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    +12%
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  RWA tokenization accelerating with institutional adoption, private credit syndication, and on-chain treasury yields.
-                </p>
-                <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  {["ONDO", "MKR", "COMP", "MAPLE"].map((t) => (
-                    <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Narrative 3 */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2">
-                    <Zap size={16} className="text-amber-400" />
-                    <h3 className="text-sm font-bold text-white">Layer 2 Scaling</h3>
-                  </div>
-                  <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    +3%
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  L2 ecosystem maturing with growing TVL and transaction counts across optimistic and zero-knowledge rollups.
-                </p>
-                <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  {["ARB", "OP", "STRK"].map((t) => (
-                    <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "signals" && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Zap size={18} className="text-cyan-400" />
-                <span>Active AI Intelligence Signals</span>
-              </h2>
-              <div className="space-y-3">
-                {[
-                  { title: "Whale Accumulation Surge on Solana", asset: "SOL", confidence: "94%", impact: "Bullish", time: "12m ago" },
-                  { title: "DeFi TVL Breakout in Liquid Staking", asset: "ETH", confidence: "89%", impact: "Bullish", time: "34m ago" },
-                  { title: "Unusual Options Open Interest Spike", asset: "BTC", confidence: "82%", impact: "Neutral", time: "1h ago" },
-                  { title: "Cross-Chain Bridge Outflow Anomaly Detected", asset: "AVAX", confidence: "91%", impact: "Cautious", time: "2h ago" },
-                ].map((s, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] font-bold">{s.asset}</span>
-                        <h3 className="text-xs font-bold text-white">{s.title}</h3>
-                      </div>
-                      <p className="text-[11px] text-slate-400">Confidence: <span className="text-emerald-400 font-mono font-bold">{s.confidence}</span> • {s.time}</p>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
-                      {s.impact}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "whales" && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Eye size={18} className="text-cyan-400" />
-                <span>Whale Capital Flow Tracking</span>
-              </h2>
-              <div className="space-y-3">
-                {[
-                  { whale: "Binance Cold Storage -> Unknown Wallet", amount: "$340.5M", asset: "BTC", type: "Outflow" },
-                  { whale: "Whale 0x71C... transferred to Coinbase", amount: "$185.2M", asset: "ETH", type: "Exchange Deposit" },
-                  { whale: "Institutional Treasury Allocation", amount: "$210.0M", asset: "SOL", type: "Accumulation" },
-                  { whale: "MakerDAO Foundation Treasury Move", amount: "$125.8M", asset: "MKR", type: "Staking" },
-                  { whale: "Unknown Whale Wallet minted stablecoins", amount: "$80.0M", asset: "USDT", type: "Mint" },
-                ].map((w, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-bold text-white">{w.whale}</p>
-                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">{w.type} • {w.asset}</p>
-                    </div>
-                    <span className="font-mono text-xs font-extrabold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      {w.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "anomalies" && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <AlertTriangle size={18} className="text-rose-400" />
-                <span>Security & On-Chain Anomalies</span>
-              </h2>
-              <div className="space-y-3">
-                {[
-                  { title: "Sudden Liquidity Drain on DEX Pair", risk: "Critical", asset: "MEME-COIN", description: "92% liquidity removed within 3 minutes of creation." },
-                  { title: "High Gas Fee Spike on Arbitrage Bot", risk: "Medium", asset: "ETH-GAS", description: "Arbitrage bots competing for mempool priority." },
-                  { title: "Contract Upgrade Function Triggered", risk: "High", asset: "DEFI-PROT", description: "Proxy contract pointing to new implementation bytecode." },
-                  { title: "Unusual Slippage Parameter in Smart Router", risk: "Medium", asset: "SOL-DEX", description: "High risk of front-running on pending DEX swaps." },
-                ].map((a, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">{a.asset}</span>
-                        <h3 className="text-xs font-bold text-white">{a.title}</h3>
-                      </div>
-                      <p className="text-[11px] text-slate-400">{a.description}</p>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/30 whitespace-nowrap">
-                      {a.risk}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Col: Sentiment Breakdown & Related Tools */}
+      {activeTab === "heatmap" ? (
+        /* ── Full Width Market Heatmap Experience ────────────────────────── */
         <div className="space-y-6">
-          {/* Sentiment Breakdown Card */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Activity size={18} className="text-blue-400" />
-              <span>Sentiment Breakdown</span>
-            </h3>
-
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium">
-                  <span className="text-slate-300">Social Media</span>
-                  <span className="text-emerald-400 font-mono font-bold">72</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: "72%" }} />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium">
-                  <span className="text-slate-300">News Sentiment</span>
-                  <span className="text-emerald-400 font-mono font-bold">61</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: "61%" }} />
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-5 shadow-2xl backdrop-blur-md">
+            {/* Heatmap Controls & Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2.5">
+                  <span className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                    <Flame size={20} />
+                  </span>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                      <span>Real-Time Crypto Market Heatmap</span>
+                      <span className="text-xs font-mono font-normal text-slate-400 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+                        Live TradingView Engine
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Visualizing market performance, capital distribution, and relative sector strength across all crypto assets.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium">
-                  <span className="text-slate-300">On-Chain</span>
-                  <span className="text-emerald-400 font-mono font-bold">75</span>
+              {/* Controls Toolbar */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Dataset Filter */}
+                <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                  <button
+                    onClick={() => setHeatmapDataset("Crypto")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      heatmapDataset === "Crypto"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Top Cryptos
+                  </button>
+                  <button
+                    onClick={() => setHeatmapDataset("CryptoDeFi")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      heatmapDataset === "CryptoDeFi"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    DeFi Sector
+                  </button>
+                  <button
+                    onClick={() => setHeatmapDataset("CryptoAll")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      heatmapDataset === "CryptoAll"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    All Coins
+                  </button>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: "75%" }} />
+
+                {/* Sizing Weight Switcher */}
+                <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                  <button
+                    onClick={() => setHeatmapBlockSize("market_cap_calc")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      heatmapBlockSize === "market_cap_calc"
+                        ? "bg-slate-800 text-white shadow-sm border border-slate-700"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Market Cap
+                  </button>
+                  <button
+                    onClick={() => setHeatmapBlockSize("volume_24h_usd")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      heatmapBlockSize === "volume_24h_usd"
+                        ? "bg-slate-800 text-white shadow-sm border border-slate-700"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    24h Volume
+                  </button>
+                </div>
+
+                {/* Fullscreen Expansion Toggle */}
+                <button
+                  onClick={() => setIsHeatmapExpanded(!isHeatmapExpanded)}
+                  className="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition"
+                  title={isHeatmapExpanded ? "Standard Size" : "Expand Heatmap"}
+                >
+                  {isHeatmapExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Sector Heat Summary Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
+              {[
+                { sector: "Layer 1 / Base", chg: "+4.8%", col: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+                { sector: "AI & Compute", chg: "+14.2%", col: "text-emerald-300", bg: "bg-emerald-500/20 border-emerald-400/40" },
+                { sector: "DeFi Protocols", chg: "+2.6%", col: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+                { sector: "Meme Tokens", chg: "-3.1%", col: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20" },
+                { sector: "Real World Assets", chg: "+8.9%", col: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
+                { sector: "Gaming / Metaverse", chg: "+1.7%", col: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+              ].map((s, idx) => (
+                <div key={idx} className={`p-2.5 rounded-xl border flex items-center justify-between ${s.bg}`}>
+                  <span className="font-semibold text-slate-200 truncate">{s.sector}</span>
+                  <span className={`font-mono font-bold ml-1 ${s.col}`}>{s.chg}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Embedded TradingView Crypto Heatmap Widget */}
+            <div
+              className={`w-full rounded-2xl overflow-hidden border border-slate-800 bg-[#0b0f19] shadow-inner transition-all duration-300 ${
+                isHeatmapExpanded ? "h-[850px]" : "h-[620px]"
+              }`}
+            >
+              <TradingViewCryptoHeatmapWidget
+                dataSource={heatmapDataset}
+                blockSize={heatmapBlockSize}
+                blockColor="change"
+                colorTheme="dark"
+                hasTopBar={true}
+                isDatasetSelectable={true}
+                isZoomable={true}
+                hasSymbolTooltip={true}
+                isFullSize={true}
+                height="100%"
+                width="100%"
+                backgroundColor="rgba(11, 15, 25, 1)"
+                gridColor="rgba(30, 41, 59, 1)"
+                borderColor="rgba(30, 41, 59, 1)"
+              />
+            </div>
+
+            {/* Heatmap Legend & Guide Footer */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/80 text-xs text-slate-400">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-bold text-slate-300">Color Spectrum:</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-rose-600" />
+                  <span className="text-[11px]">&lt; -5%</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-rose-500/60" />
+                  <span className="text-[11px]">-2%</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-slate-700" />
+                  <span className="text-[11px]">0% (Flat)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-emerald-500/60" />
+                  <span className="text-[11px]">+2%</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-emerald-500" />
+                  <span className="text-[11px]">&gt; +5%</span>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium">
-                  <span className="text-slate-300">Technical</span>
-                  <span className="text-emerald-400 font-mono font-bold">64</span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: "64%" }} />
-                </div>
+              <div className="flex items-center gap-4 text-[11px]">
+                <span><strong>Block Size:</strong> Sized by {heatmapBlockSize === "market_cap_calc" ? "Circulating Market Cap" : "24-Hour Trading Volume"}</span>
+                <span><strong>Interaction:</strong> Click any block to zoom, hover for metrics</span>
               </div>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          {/* Left 2 Cols: Dynamic Tab Content */}
+          <div className="lg:col-span-2 space-y-4">
+            {activeTab === "narratives" && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <h2 className="text-base font-bold text-white flex items-center gap-2">
+                    <Layers size={18} className="text-blue-400" />
+                    <span>Trending Narratives</span>
+                  </h2>
+                  <span className="text-xs font-mono text-slate-400">6 Active Sectors</span>
+                </div>
 
-          {/* Related Tools Card */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-3 shadow-2xl">
-            <h3 className="text-base font-bold text-white mb-2">Related Tools</h3>
-            {[
-              { id: "fear_greed", label: "Fear & Greed Index", icon: Sparkles, color: "text-amber-400" },
-              { id: "heatmap", label: "Market Heatmap", icon: Activity, color: "text-blue-400" },
-              { id: "unlocks", label: "Token Unlocks", icon: Clock, color: "text-purple-400" },
-              { id: "defi", label: "DeFi Dashboard", icon: Layers, color: "text-emerald-400" },
-              { id: "screener", label: "Price Screener", icon: Radio, color: "text-cyan-400" },
-            ].map((tool) => {
-              const IconComp = tool.icon;
-              return (
-                <button
-                  key={tool.id}
-                  onClick={() => setActiveToolModal(tool.id)}
-                  className="w-full p-3 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between transition text-xs text-slate-200 font-semibold group cursor-pointer text-left"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <IconComp size={16} className={tool.color} />
-                    <span>{tool.label}</span>
+                {/* Narrative 1 */}
+                <div className="space-y-3 pb-5 border-b border-slate-800/80">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp size={16} className="text-emerald-400" />
+                      <h3 className="text-sm font-bold text-white">AI & Compute</h3>
+                    </div>
+                    <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      +18%
+                    </span>
                   </div>
-                  <ArrowRight size={14} className="text-slate-500 group-hover:text-white transition" />
-                </button>
-              );
-            })}
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    AI infrastructure tokens surging on new GPU compute demand and decentralized model training volume.
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    {["RNDR", "TAO", "FET", "NEAR"].map((t) => (
+                      <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Narrative 2 */}
+                <div className="space-y-3 pb-5 border-b border-slate-800/80">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp size={16} className="text-emerald-400" />
+                      <h3 className="text-sm font-bold text-white">Real-World Assets</h3>
+                    </div>
+                    <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      +12%
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    RWA tokenization accelerating with institutional adoption, private credit syndication, and on-chain treasury yields.
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    {["ONDO", "MKR", "COMP", "MAPLE"].map((t) => (
+                      <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Narrative 3 */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <Zap size={16} className="text-amber-400" />
+                      <h3 className="text-sm font-bold text-white">Layer 2 Scaling</h3>
+                    </div>
+                    <span className="text-emerald-400 font-mono font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      +3%
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    L2 ecosystem maturing with growing TVL and transaction counts across optimistic and zero-knowledge rollups.
+                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    {["ARB", "OP", "STRK"].map((t) => (
+                      <span key={t} className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "signals" && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Zap size={18} className="text-cyan-400" />
+                  <span>Active AI Intelligence Signals</span>
+                </h2>
+                <div className="space-y-3">
+                  {[
+                    { title: "Whale Accumulation Surge on Solana", asset: "SOL", confidence: "94%", impact: "Bullish", time: "12m ago" },
+                    { title: "DeFi TVL Breakout in Liquid Staking", asset: "ETH", confidence: "89%", impact: "Bullish", time: "34m ago" },
+                    { title: "Unusual Options Open Interest Spike", asset: "BTC", confidence: "82%", impact: "Neutral", time: "1h ago" },
+                    { title: "Cross-Chain Bridge Outflow Anomaly Detected", asset: "AVAX", confidence: "91%", impact: "Cautious", time: "2h ago" },
+                  ].map((s, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] font-bold">{s.asset}</span>
+                          <h3 className="text-xs font-bold text-white">{s.title}</h3>
+                        </div>
+                        <p className="text-[11px] text-slate-400">Confidence: <span className="text-emerald-400 font-mono font-bold">{s.confidence}</span> • {s.time}</p>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                        {s.impact}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "whales" && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Eye size={18} className="text-cyan-400" />
+                  <span>Whale Capital Flow Tracking</span>
+                </h2>
+                <div className="space-y-3">
+                  {[
+                    { whale: "Binance Cold Storage -> Unknown Wallet", amount: "$340.5M", asset: "BTC", type: "Outflow" },
+                    { whale: "Whale 0x71C... transferred to Coinbase", amount: "$185.2M", asset: "ETH", type: "Exchange Deposit" },
+                    { whale: "Institutional Treasury Allocation", amount: "$210.0M", asset: "SOL", type: "Accumulation" },
+                    { whale: "MakerDAO Foundation Treasury Move", amount: "$125.8M", asset: "MKR", type: "Staking" },
+                    { whale: "Unknown Whale Wallet minted stablecoins", amount: "$80.0M", asset: "USDT", type: "Mint" },
+                  ].map((w, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-bold text-white">{w.whale}</p>
+                        <p className="text-[11px] text-slate-400 font-mono mt-0.5">{w.type} • {w.asset}</p>
+                      </div>
+                      <span className="font-mono text-xs font-extrabold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                        {w.amount}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "anomalies" && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <AlertTriangle size={18} className="text-rose-400" />
+                  <span>Security & On-Chain Anomalies</span>
+                </h2>
+                <div className="space-y-3">
+                  {[
+                    { title: "Sudden Liquidity Drain on DEX Pair", risk: "Critical", asset: "MEME-COIN", description: "92% liquidity removed within 3 minutes of creation." },
+                    { title: "High Gas Fee Spike on Arbitrage Bot", risk: "Medium", asset: "ETH-GAS", description: "Arbitrage bots competing for mempool priority." },
+                    { title: "Contract Upgrade Function Triggered", risk: "High", asset: "DEFI-PROT", description: "Proxy contract pointing to new implementation bytecode." },
+                    { title: "Unusual Slippage Parameter in Smart Router", risk: "Medium", asset: "SOL-DEX", description: "High risk of front-running on pending DEX swaps." },
+                  ].map((a, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">{a.asset}</span>
+                          <h3 className="text-xs font-bold text-white">{a.title}</h3>
+                        </div>
+                        <p className="text-[11px] text-slate-400">{a.description}</p>
+                      </div>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/30 whitespace-nowrap">
+                        {a.risk}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Col: Sentiment Breakdown & Related Tools */}
+          <div className="space-y-6">
+            {/* Sentiment Breakdown Card */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Activity size={18} className="text-blue-400" />
+                <span>Sentiment Breakdown</span>
+              </h3>
+
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-slate-300">Social Media</span>
+                    <span className="text-emerald-400 font-mono font-bold">72</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "72%" }} />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-slate-300">News Sentiment</span>
+                    <span className="text-emerald-400 font-mono font-bold">61</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "61%" }} />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-slate-300">On-Chain</span>
+                    <span className="text-emerald-400 font-mono font-bold">75</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "75%" }} />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium">
+                    <span className="text-slate-300">Technical</span>
+                    <span className="text-emerald-400 font-mono font-bold">64</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "64%" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Related Tools Card */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-3 shadow-2xl">
+              <h3 className="text-base font-bold text-white mb-2">Related Tools</h3>
+              {[
+                { id: "fear_greed", label: "Fear & Greed Index", icon: Sparkles, color: "text-amber-400" },
+                { id: "heatmap", label: "Market Heatmap", icon: Flame, color: "text-amber-400" },
+                { id: "unlocks", label: "Token Unlocks", icon: Clock, color: "text-purple-400" },
+                { id: "defi", label: "DeFi Dashboard", icon: Layers, color: "text-emerald-400" },
+                { id: "screener", label: "Price Screener", icon: Radio, color: "text-cyan-400" },
+              ].map((tool) => {
+                const IconComp = tool.icon;
+                return (
+                  <button
+                    key={tool.id}
+                    onClick={() => {
+                      if (tool.id === "heatmap") {
+                        setActiveTab("heatmap");
+                      } else {
+                        setActiveToolModal(tool.id);
+                      }
+                    }}
+                    className="w-full p-3 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between transition text-xs text-slate-200 font-semibold group cursor-pointer text-left"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <IconComp size={16} className={tool.color} />
+                      <span>{tool.label}</span>
+                    </div>
+                    <ArrowRight size={14} className="text-slate-500 group-hover:text-white transition" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Tool Modal Dialog */}
       {activeToolModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-6 shadow-2xl relative">
+          <div
+            className={`bg-slate-900 border border-slate-800 rounded-2xl w-full p-6 space-y-6 shadow-2xl relative transition-all ${
+              activeToolModal === "heatmap" || activeToolModal === "fear_greed"
+                ? "max-w-6xl max-h-[90vh] overflow-y-auto"
+                : "max-w-2xl"
+            }`}
+          >
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <h2 className="text-lg font-extrabold text-white capitalize flex items-center gap-2">
                 <Sparkles className="text-blue-400" size={20} />
@@ -598,22 +796,41 @@ export default function MarketIntelligencePage() {
               )}
 
               {activeToolModal === "heatmap" && (
-                <div className="space-y-3">
-                  <p className="text-slate-400">Sector Performance Heatmap (24h Change):</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { name: "Layer 1", chg: "+5.4%", col: "bg-emerald-600/30 border-emerald-500/50 text-emerald-300" },
-                      { name: "AI & Data", chg: "+14.8%", col: "bg-emerald-500/40 border-emerald-400 text-white font-bold" },
-                      { name: "DeFi", chg: "+2.1%", col: "bg-emerald-600/20 border-emerald-500/30 text-emerald-300" },
-                      { name: "Memes", chg: "-3.2%", col: "bg-rose-600/30 border-rose-500/50 text-rose-300" },
-                      { name: "Gaming", chg: "+1.9%", col: "bg-emerald-600/20 border-emerald-500/30 text-emerald-300" },
-                      { name: "Stablecoins", chg: "0.0%", col: "bg-slate-800 border-slate-700 text-slate-300" },
-                    ].map((s, i) => (
-                      <div key={i} className={`p-3 rounded-xl border text-center space-y-1 ${s.col}`}>
-                        <p className="font-bold">{s.name}</p>
-                        <p className="font-mono text-sm">{s.chg}</p>
-                      </div>
-                    ))}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h3 className="text-base font-bold text-white">TradingView Crypto Coins Heatmap</h3>
+                      <p className="text-slate-400 text-xs">Live interactive heatmap displaying market cap sizing and price change.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setActiveToolModal(null);
+                        setActiveTab("heatmap");
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold transition text-xs flex items-center gap-1.5"
+                    >
+                      <span>Open Full Page View</span>
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+
+                  <div className="w-full h-[540px] rounded-xl overflow-hidden border border-slate-800 bg-[#0b0f19]">
+                    <TradingViewCryptoHeatmapWidget
+                      dataSource="Crypto"
+                      blockSize="market_cap_calc"
+                      blockColor="change"
+                      colorTheme="dark"
+                      hasTopBar={true}
+                      isDatasetSelectable={true}
+                      isZoomable={true}
+                      hasSymbolTooltip={true}
+                      isFullSize={true}
+                      height="100%"
+                      width="100%"
+                      backgroundColor="rgba(11, 15, 25, 1)"
+                      gridColor="rgba(30, 41, 59, 1)"
+                      borderColor="rgba(30, 41, 59, 1)"
+                    />
                   </div>
                 </div>
               )}

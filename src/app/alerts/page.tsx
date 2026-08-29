@@ -247,6 +247,10 @@ export default function AlertsPage() {
                     <img
                       src={criticalItems[0].image_url}
                       alt={criticalItems[0].title}
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                     />
                     <div className="absolute inset-0 bg-red-950/30" />
@@ -443,6 +447,10 @@ export default function AlertsPage() {
                           <img
                             src={item.image_url}
                             alt={item.title}
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = "none";
+                            }}
                             className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                           />
                         </div>

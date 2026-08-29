@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
 import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartModal";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 
 interface DexTrendingCoinsSectionProps {
   initialChain?: string;
@@ -351,21 +352,14 @@ export function DexTrendingCoinsSection({
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-slate-800 border border-slate-700 flex-shrink-0 flex items-center justify-center text-xs font-bold text-slate-300">
-                        {coin.icon ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={coin.icon}
-                            alt={coin.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLElement).style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          <span>{coin.symbol.slice(0, 3)}</span>
-                        )}
-                      </div>
+                      <CryptoAvatar
+                        coinId={coin.id}
+                        symbol={coin.symbol}
+                        name={coin.name}
+                        imageUrl={coin.icon}
+                        size="md"
+                        className="w-10 h-10 flex-shrink-0"
+                      />
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">

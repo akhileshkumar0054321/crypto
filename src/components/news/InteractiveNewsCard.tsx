@@ -40,6 +40,10 @@ export function InteractiveNewsCard({ item, onSelect }: InteractiveNewsCardProps
           <img
             src={item.image_url}
             alt={item.title}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = "none";
+            }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />

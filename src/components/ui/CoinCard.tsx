@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { TrendingUp, TrendingDown, AlertTriangle, ShieldCheck, Zap } from "lucide-react";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 
 interface Coin {
   coin_id: string;
@@ -75,17 +76,14 @@ export function CoinCard({ coin }: { coin: Coin }) {
 
       {/* Coin Title & Icon */}
       <div className="flex items-center gap-2.5 mb-3">
-        {coin.image_url ? (
-          <img
-            src={coin.image_url}
-            alt={coin.symbol}
-            className="w-8 h-8 rounded-full border border-white/10"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400">
-            {coin.symbol?.slice(0, 2).toUpperCase()}
-          </div>
-        )}
+        <CryptoAvatar
+          coinId={coin.coin_id}
+          symbol={coin.symbol}
+          name={coin.name}
+          imageUrl={coin.image_url}
+          size="md"
+          className="w-8 h-8"
+        />
         <div className="min-w-0 flex-1">
           <p className="text-slate-100 font-bold text-sm truncate">{coin.name}</p>
           <p className="text-slate-500 text-[10px] uppercase font-mono font-bold">{coin.symbol}</p>

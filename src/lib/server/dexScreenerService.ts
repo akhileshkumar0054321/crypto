@@ -14,7 +14,7 @@ class DexScreenerService {
       const res = await fetch("https://api.dexscreener.com/token-profiles/latest/v1", {
         signal: controller.signal,
         headers: { Accept: "application/json" },
-        cache: "no-store",
+        next: { revalidate: 30 },
       });
       clearTimeout(timeoutId);
 
@@ -25,6 +25,9 @@ class DexScreenerService {
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     } catch (err: any) {
+      if (err?.message?.includes("Dynamic server usage")) {
+        return [];
+      }
       console.warn("Error fetching DexScreener token profiles:", err?.message);
       return [];
     }
@@ -38,7 +41,7 @@ class DexScreenerService {
       const res = await fetch("https://api.dexscreener.com/token-boosts/top/v1", {
         signal: controller.signal,
         headers: { Accept: "application/json" },
-        cache: "no-store",
+        next: { revalidate: 30 },
       });
       clearTimeout(timeoutId);
 

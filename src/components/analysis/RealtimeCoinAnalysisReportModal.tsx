@@ -43,6 +43,7 @@ import {
   Code,
 } from "lucide-react";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 import { toast } from "sonner";
 import Link from "next/link";
 import { RealisticLiveExchangeGraph } from "@/components/charts/RealisticLiveExchangeGraph";
@@ -225,17 +226,14 @@ ${pointByPointNews.map((n: any, i: number) => `${i + 1}. ${n.headline}\n   - Wha
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-slate-800/90 bg-[#0f1626] flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
-            {coin.image_url ? (
-              <img
-                src={coin.image_url}
-                alt={coin.symbol}
-                className="w-10 h-10 rounded-full border border-white/15 bg-slate-900 p-0.5"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center font-bold text-blue-400">
-                {coin.symbol.slice(0, 3)}
-              </div>
-            )}
+            <CryptoAvatar
+              coinId={coin.coin_id}
+              symbol={coin.symbol}
+              name={coin.name}
+              imageUrl={coin.image_url}
+              size="lg"
+              className="w-10 h-10 border border-white/15 shadow"
+            />
 
             <div>
               <div className="flex items-center gap-2">
@@ -269,7 +267,14 @@ ${pointByPointNews.map((n: any, i: number) => `${i + 1}. ${n.headline}\n   - Wha
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            {c.image_url && <img src={c.image_url} alt="" className="w-4 h-4 rounded-full" />}
+                            <CryptoAvatar
+                              coinId={c.coin_id}
+                              symbol={c.symbol}
+                              name={c.name}
+                              imageUrl={c.image_url}
+                              size="xs"
+                              className="w-4 h-4"
+                            />
                             <span>{c.name}</span>
                             <span className="text-slate-500 uppercase font-mono text-[10px]">({c.symbol})</span>
                           </div>

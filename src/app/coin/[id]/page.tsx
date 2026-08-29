@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { coinApi, riskApi, reportApi } from "@/lib/api";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
 import { RiskGauge } from "@/components/ui/RiskGauge";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 import {
   AreaChart,
   Area,
@@ -313,17 +314,14 @@ export default function CoinDetailPage() {
         />
 
         <div className="flex items-center gap-4">
-          {coin.image_url ? (
-            <img
-              src={coin.image_url}
-              alt={coin.name}
-              className="w-14 h-14 rounded-full border-2 border-white/10"
-            />
-          ) : (
-            <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-300">
-              {coin.symbol?.slice(0, 3).toUpperCase()}
-            </div>
-          )}
+          <CryptoAvatar
+            coinId={coin.coin_id}
+            symbol={coin.symbol}
+            name={coin.name}
+            imageUrl={coin.image_url}
+            size="lg"
+            className="w-14 h-14 border-2 border-white/10"
+          />
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="text-2xl font-extrabold text-slate-100">{coin.name}</h1>

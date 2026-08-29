@@ -1,203 +1,970 @@
-# 🛡️ CryptoVision — AI Risk Management & Institutional Forensic Intelligence for Cryptocurrency
+# 🛡️ CryptoVision
 
-> **Track:** **AI Risk Management**  
-> **Tagline:** Democratizing institutional risk intelligence — turning complex on-chain data, tokenomic traps, and market noise into actionable, plain-English protection for every investor.
+### AI-Powered Cryptocurrency Risk Management Platform
 
----
+**Hackathon Track: AI Risk Management**
 
-## 🎯 Why CryptoVision?
+CryptoVision is an AI-powered cryptocurrency risk management platform designed to help users understand the **risk behind a crypto asset or portfolio before making a financial decision**.
 
-In traditional finance, institutional hedge funds and risk desks use multi-million dollar Bloomberg terminals, quantitative risk engines, and teams of data scientists to evaluate downside risk before risking a single dollar. 
+Instead of relying on a single price chart or market indicator, CryptoVision collects information from multiple sources and processes it through its own **risk analysis pipeline**. Market conditions, liquidity, tokenomics, on-chain activity, news and sentiment are combined to create a structured risk profile.
 
-In cryptocurrency, over **100 million everyday retail investors** enter a 24/7 global market with almost **zero institutional risk tooling**. They face:
-- **Deceptive Influencer Hype & Bot-Driven FOMO**: Artificial social media campaigns and paid shills masking worthless or heavily inflated tokens.
-- **Hidden Tokenomic & Smart Contract Traps**: Unlocking cliffs, centralized creator mint keys, and unlocked liquidity pools that trigger sudden crashes and rug pulls.
-- **Scattered & Overwhelming Data**: Traders juggle 6+ disjointed websites (block explorers, DEX screeners, news aggregators, sentiment gauges, and charting tools) to research a single coin.
-- **Cryptic Technical Jargon**: Whitepapers and audit reports filled with complex terminology that non-technical users cannot easily interpret.
+The platform then uses AI to explain these risks and present them in a form that users can understand and act upon.
 
-**The Result:** Billions of dollars are lost every year not because people didn't research, but because they lacked an intelligent system to quantify and explain the risks to them.
-
-**CryptoVision solves this.** It unifies real-time market surveillance, on-chain forensics, specialized crypto Natural Language Processing (NLP), and generative AI reasoning into a single, intuitive platform that anyone can use in seconds.
+> **CryptoVision is not built to simply predict the next price. It is built to understand what could go wrong.**
 
 ---
 
-## 🤖 How AI is Helping in Crypto Investment & Risk Management
+# 🎯 Problem Statement
 
-Cryptocurrency markets generate terabytes of unstructured text (news, tweets, Discord announcements, whitepapers) and high-frequency numerical data (order books, liquidity pools, transaction flows) every second. Humans cannot process this volume of data in real time, leading to emotional, delayed, and high-risk decisions.
+Cryptocurrency markets generate a huge amount of information every second.
 
-AI transforms crypto investment in five foundational ways:
+A user researching a cryptocurrency may need to look at:
 
-1. **Filtering Signal from Noise**: AI rapidly scans hundreds of breaking headlines and social discussions, filtering out bot spam and identifying genuine market-moving events.
-2. **Quantifying Qualitative Risk**: Natural language processing models convert unstructured news and community sentiment into objective mathematical probability distributions (`Bullish %`, `Bearish %`, `Neutral %`).
-3. **Deciphering Complex Smart Contracts**: Machine learning algorithms inspect code characteristics, ownership permissions, and transaction histories to detect potential vulnerabilities or honeypot mechanics.
-4. **Stress-Testing Against Historical Disasters**: Quantitative algorithms simulate how an investment portfolio would hold up during black swan events (such as liquidity freezes or algorithmic stablecoin collapses).
-5. **Translating Technical Data into Simple Explanations**: Generative AI synthesizes complex multi-dimensional risk scores into straightforward, plain-English summaries and tailored action playbooks.
+* Price and volatility
+* Trading volume
+* Liquidity
+* Market capitalization
+* Token supply
+* Token unlocks
+* Whale transactions
+* On-chain activity
+* News
+* Social sentiment
+* DeFi activity
+* Protocol information
 
----
+The problem is not the lack of data.
 
-## 🧠 The AI & Machine Learning Models We Use
+**The problem is that the data is fragmented and difficult to interpret together.**
 
-CryptoVision uses a multi-layered AI architecture combining domain-specific transformer models and generative reasoning engines:
+For example, a token may be showing a 100% price increase and extremely positive social sentiment.
 
-### 1. `ElKulako/cryptobert` (Specialized Crypto NLP Model)
-- **What it is:** A RoBERTa-based Transformer model pre-trained specifically on millions of cryptocurrency discussions, news headlines, and social posts.
-- **Why we use it:** Generic sentiment analysis tools (like standard BERT or VADER) fail in cryptocurrency because words like *"moon"*, *"pump"*, *"rekt"*, *"dump"*, or *"hodl"* have domain-specific meanings that general models misunderstand. `CryptoBERT` delivers high-precision, crypto-native sentiment classification, providing live probability scores across **Bullish**, **Bearish**, and **Neutral** sentiment.
+At first glance, it may appear to be a strong opportunity.
 
-### 2. `tabularisai/ModernFinBERT` (Financial NLP Model)
-- **What it is:** A specialized financial domain NLP model designed to parse corporate finance, macroeconomic announcements, and institutional regulatory filings.
-- **Why we use it:** Used to evaluate macro news events, SEC/regulatory statements, interest rate announcements, and institutional adoption reports with institutional-grade accuracy.
+However, deeper analysis may reveal:
 
-### 3. Google Gemini API (Generative Reasoning & Risk Synthesis Engine)
-- **What it is:** Google's state-of-the-art multimodal generative model.
-- **Why we use it:** Acts as the cognitive engine for the **AI Risk Copilot** and the **6-Section Institutional Forensic Audit Dossier**. Gemini takes numerical risk scores, tokenomic data, and sentiment percentages, synthesizing them into simple-English summaries, tailored risk playbooks (for beginners, long-term holders, and traders), and contextual answers to user questions.
-
----
-
-## 💼 Feature Spotlight: External Portfolio Analysis & Stress-Testing
-
-One of the flagship capabilities of CryptoVision is the ability to **analyze and stress-test custom and external portfolios**:
-
-```
- ┌────────────────────────────────────────────────────────────────────────┐
- │                    EXTERNAL PORTFOLIO RISK ANALYZER                    │
- ├────────────────────────────────────────────────────────────────────────┤
- │  [ Custom Coin Inputs ] ──> [ Multi-Asset Correlation Matrix ]         │
- │  [ Quantity / Holdings] ──> [ Value-at-Risk (95% & 99% VaR) ]          │
- │  [ Wallet Import / Custom] ──> [ Black-Swan Crash Scenario Simulator ] │
- └────────────────────────────────────────────────────────────────────────┘
+```text
+High Price Momentum
+        +
+Very High Social Hype
+        +
+Low Liquidity
+        +
+Whale Concentration
+        +
+Large Upcoming Token Unlock
+        ↓
+     High Risk
 ```
 
-- **Custom Holdings & Wallet Simulation**: Users can input any custom combination of cryptocurrencies and allocations to evaluate their overall risk exposure in real time.
-- **Value-at-Risk (VaR) Engine**: Calculates potential capital at risk over 1-day and 30-day horizons under standard market conditions using 95% and 99% confidence intervals.
-- **Asset Correlation & Diversification Matrix**: Analyzes whether your holdings are truly diversified or if they are tightly correlated assets that will all plunge simultaneously during a market downturn.
-- **Historical Black-Swan Stress-Testing**: Simulates how your custom portfolio would perform if subjected to major historical crypto market crashes:
-  - *The FTX Liquidity Collapse*
-  - *The Terra/Luna Algorithmic Stablecoin Death Spiral*
-  - *The March 2020 Global Liquidity Shock*
-  - *The 2021 China Mining Ban Shock*
-- **Automated Rebalancing & Risk Mitigation Suggestions**: The AI engine provides targeted suggestions to reduce concentration risk and improve portfolio resilience.
+A conventional market dashboard may show all of these numbers separately, leaving the user to interpret them.
+
+CryptoVision takes the next step:
+
+> **It processes these signals together and converts them into a structured risk assessment.**
 
 ---
 
-## 🌟 Full Suite of Features
+# 💡 Our Solution
 
-### 1. 📡 Real-Time Crypto Risk Radar & Token Scanner
-- **0–100 Composite Risk Scoring** calculated across 5 core dimensions:
-  1. *Market Volatility & Beta Risk* (drawdown velocity, ATR, swing intensity)
-  2. *Liquidity Depth & Slippage Risk* (order book resilience, volume/FDV ratios)
-  3. *Whale & On-Chain Concentration Risk* (top 10 wallet control, exchange flows)
-  4. *Developer & Protocol Integrity Risk* (GitHub commit velocity, audit history)
-  5. *AI NLP Sentiment & Media Risk* (CryptoBERT sentiment distribution)
-- Categorizes tokens into visual risk tiers: **Low Risk (0–25)**, **Moderate (26–50)**, **High Risk (51–75)**, and **Critical Danger (76–100)**.
-- **Custom Token Scanner**: Instant forensic scanner for any token symbol, coin ID, or contract address across EVM chains and Solana.
+CryptoVision follows a multi-stage risk analysis process.
 
-### 2. 📖 "Simple English" Translation Hub
-Translates complex whitepapers and technical indicators into four clear sections:
-- **What This Coin Actually Does**: Translates buzzwords into a 2-sentence real-world analogy.
-- **What is Happening Right Now**: Explains the current price action and drivers without confusing market jargon.
-- **Whale Movements Decoded**: Explains whether large wallet owners are accumulating or offloading on retail.
-- **Team Reality Check**: Honest assessment of real developer activity versus marketing hype.
-- **The Golden Rule for Your Money**: One foundational safety rule for the specific asset.
-
-### 3. 📑 6-Section Institutional Forensic Audit Dossier
-Generates comprehensive, printable institutional-grade audit reports:
-- **Section 1**: Asset Identity, Historical Cycle Drawdowns & Milestones
-- **Section 2**: Protocol Mechanics, Consensus & Network Utility
-- **Section 3**: Tokenomics Health, Supply Inflation & Vesting Unlock Schedules
-- **Section 4**: Point-by-Point Breaking News & CryptoBERT Probability Breakdown
-- **Section 5**: Security Audits, Centralization Vectors & Red Flag Check
-- **Section 6**: 30-Day & 90-Day Predictive Scenarios (Bull, Bear, Base Case) & Invalidation Playbook
-
-### 4. 🔍 Small-Cap DEX & DeFi Surveillance
-- Real-time tracking of small-cap pairs, meme coin liquidity lock statuses, 5m/1h/24h volume surges, and fully diluted valuations (FDV).
-- Comprehensive DeFi analytics: protocol Total Value Locked (TVL), chain dominance metrics, cross-chain bridge health, and stablecoin de-peg monitors.
-
-### 5. 📊 Interactive Live Charts & Technical Indicators
-- Real-time candlestick charts with interval selectors (1m, 5m, 15m, 1h, 4h, 1D, 1W) and sub-second tick animations.
-- Integrated indicators: Exponential Moving Averages (EMA 20/50/200), Relative Strength Index (RSI 14), MACD, and Bollinger Bands.
-
-### 6. 🤖 Interactive AI Risk Copilot
-- Always-available conversational risk advisor powered by Google Gemini.
-- Enables investors to ask questions about token safety, contract risks, market anomalies, and portfolio diversification strategies.
-
----
-
-## 🛠️ The Tech Stack: What We Used & Why We Used It
-
-| Layer | Technologies Used | Why We Chose This Technology |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Next.js 14+ (App Router)** & **React 18** | Fast server-side rendering (SSR), optimized bundle sizes, and native API routing. |
-| **Styling & Motion** | **Tailwind CSS** & **Framer Motion** | High-contrast, responsive dark-mode interface with fluid transitions and zero layout shift. |
-| **AI & NLP Models** | **`ElKulako/cryptobert`** (Hugging Face), **`ModernFinBERT`**, **Google Gemini** | Specialized crypto NLP classification, institutional financial sentiment parsing, and generative multi-factor reasoning. |
-| **State Management** | **Zustand** & **React Context** | Lightweight, reactive client-side store managing live price feeds, active modals, and user portfolios. |
-| **Live Charting** | **Canvas API** & **TradingView Pro Integration** | Sub-second animated candlestick rendering and technical indicator computation without third-party lag. |
-| **Market Data Feeds** | **Binance API**, **DexScreener API**, **DeFi Llama API**, **CoinGecko** | Direct access to institutional order books, small-cap DEX pools, on-chain TVL, and global market statistics. |
-| **Icons & UI Assets** | **Lucide React** | Consistent, accessible visual iconography for risk badges, status chips, and navigation controls. |
-| **Type Safety** | **TypeScript** | Strict type definitions across tokens, on-chain metrics, API responses, and risk models. |
-
----
-
-## 🏛️ Application Structure
-
-```
-├── src/
-│   ├── app/                                # Next.js App Router & Server API Routes
-│   │   ├── layout.tsx                      # Global layout & AI Copilot drawer
-│   │   ├── page.tsx                        # Live Risk Radar, Heatmaps & Token Scanner
-│   │   ├── coin/[id]/                      # Individual coin terminal & CryptoBERT audit
-│   │   ├── defi/                           # DeFi protocol yields & chain flashcards
-│   │   ├── alerts/                         # Real-time risk spike notification manager
-│   │   ├── portfolio/                      # External portfolio analyzer, VaR & stress testing
-│   │   ├── reports/                        # Printable institutional forensic audit dossiers
-│   │   └── api/                            # Server-Side API Handlers (API Keys Kept Secure)
-│   │       ├── coins/                      # Market data, scanning & coin analytics
-│   │       ├── nlp/                        # CryptoBERT & ModernFinBERT sentiment endpoints
-│   │       ├── dexscreener/                # Small-cap DEX tokens & trending pairs
-│   │       ├── defi/                       # DeFi Llama protocol & TVL data feeds
-│   │       ├── news/                       # Breaking crypto news & NLP impact scoring
-│   │       ├── reports/                    # 6-Section forensic report synthesizer
-│   │       └── risk/                       # Risk engine calculation endpoints
-│   │
-│   ├── components/                         # Modular React UI Components
-│   │   ├── analysis/                       # Risk radars, 6-Section modals & Plain-English cards
-│   │   ├── charts/                         # TradingView Pro, Canvas candlestick graphs, Depth charts
-│   │   ├── news/                           # Interactive news cards & sentiment breakdown modals
-│   │   ├── defi/                           # Chain flashcards, protocol TVL cards & yield tables
-│   │   ├── ai/                             # Interactive AI Risk Copilot chat interface
-│   │   ├── layout/                         # Navigation bar, live price ticker tape, footer
-│   │   └── ui/                             # Risk gauges, stat badges, modal dialogs
-│   │
-│   ├── lib/                                # Core Services & Business Logic
-│   │   ├── server/                         # Server-only services (API keys safely isolated)
-│   │   │   ├── cryptoService.ts            # Central market data engine & risk calculator
-│   │   │   ├── cryptoBert.ts               # Hugging Face CryptoBERT client & tokenizer logic
-│   │   │   ├── modernFinbert.ts            # ModernFinBERT financial sentiment client
-│   │   │   ├── dexScreenerService.ts       # DexScreener small-cap integration
-│   │   │   └── defiLlamaService.ts         # DeFi Llama protocol & TVL integration
-│   │   ├── context/                        # React Context providers (LiveMarket, Alerts, Auth)
-│   │   ├── store/                          # Zustand client-side application state
-│   │   ├── api.ts                          # Client API service wrapper
-│   │   └── utils.ts                        # Risk scoring formulas, formatting & styling helpers
-│   │
-│   └── types/                              # TypeScript domain interfaces & data models
+```text
+              DATA COLLECTION
+                     ↓
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+     Market       On-Chain       DeFi
+      Data          Data          Data
+        │            │            │
+        └────────────┼────────────┘
+                     ↓
+             DATA PROCESSING
+                     ↓
+          FEATURE & RISK ANALYSIS
+                     ↓
+       ┌─────────────┴─────────────┐
+       ↓                           ↓
+ Quantitative Analysis       AI/NLP Analysis
+       │                           │
+       │                    CryptoBERT
+       │                    ModernFinBERT
+       │                           │
+       └─────────────┬─────────────┘
+                     ↓
+             RISK ENGINE
+                     ↓
+          COMPOSITE RISK SCORE
+                     ↓
+                GEMINI AI
+                     ↓
+          RISK EXPLANATION
+                     ↓
+             USER DASHBOARD
 ```
 
----
+The important part of the architecture is the **processing layer between data sources and the final result**.
 
-## 🔒 Security & Environment Variables
+The application does not simply display external data.
 
-All external API calls and AI inference requests are securely proxied through server-side route handlers (`/api/*`). The application utilizes the following environment variables:
-
-- `GEMINI_API_KEY`: Powers the conversational AI Risk Copilot and 6-section forensic report generation.
-- `HUGGINGFACE_API_TOKEN`: Accesses the Hugging Face Inference API for `ElKulako/cryptobert` NLP sentiment scoring.
-- `COINGECKO_API_KEY`: Global cryptocurrency pricing, historical candlestick data, and token metadata.
-- `ETHERSCAN_API_KEY`: Smart contract verification and on-chain wallet tracking.
-- `ALCHEMY_API_KEY`: Blockchain RPC node provider for contract state checks.
-- `BINANCE_API_KEY` / `BINANCE_API_SECRET`: High-frequency exchange ticker and order book depth data.
-- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`: Automated risk spike alert broadcasts.
+It collects different signals, processes them, evaluates risk factors, combines the results and then uses AI to explain the outcome.
 
 ---
 
-## 📄 License
+# 🧠 How CryptoVision Works
 
-This project is open-source and licensed under the **MIT License**.
+## Step 1 — Collect Data
+
+CryptoVision gathers information from multiple cryptocurrency and financial data sources.
+
+The data includes:
+
+* Market prices
+* Trading volume
+* Liquidity
+* Market capitalization
+* DEX activity
+* Token information
+* DeFi metrics
+* On-chain indicators
+* News
+* Social sentiment
+
+Different sources are used because no single source provides a complete view of cryptocurrency risk.
+
+---
+
+## Step 2 — Process the Data
+
+Raw data is not directly shown as a risk score.
+
+The application processes the information and converts it into meaningful indicators.
+
+For example:
+
+```text
+Raw Market Data
+      ↓
+Price History
+      ↓
+Volatility Analysis
+      ↓
+Market Risk Indicator
+```
+
+Similarly:
+
+```text
+Liquidity + Volume + Market Activity
+                 ↓
+          Liquidity Analysis
+                 ↓
+          Liquidity Risk
+```
+
+And:
+
+```text
+Whale Activity + Exchange Flows
+                 ↓
+          On-Chain Analysis
+                 ↓
+            Whale Risk
+```
+
+This processing layer allows the application to transform raw information into **risk-related features**.
+
+---
+
+# 📊 Multi-Factor Risk Engine
+
+The core of CryptoVision is its **multi-factor risk analysis**.
+
+Instead of using one variable to determine risk, the system considers several dimensions.
+
+### Market Risk
+
+Analyzes factors such as:
+
+* Price movement
+* Volatility
+* Trading activity
+* Market conditions
+* Drawdowns
+
+### Liquidity Risk
+
+Examines:
+
+* Available liquidity
+* Trading volume
+* Market depth indicators
+* DEX liquidity
+* Liquidity changes
+
+### Tokenomics Risk
+
+Considers:
+
+* Circulating supply
+* Total supply
+* Maximum supply
+* Supply distribution
+* Token unlocks
+* Inflation-related factors
+
+### On-Chain Risk
+
+Analyzes:
+
+* Whale activity
+* Exchange flows
+* Active addresses
+* Netflows
+* Blockchain activity
+* Contract-related indicators
+
+### Sentiment Risk
+
+Uses AI/NLP models to analyze:
+
+* Crypto discussions
+* Financial news
+* Market sentiment
+* Bullish/bearish trends
+* Changes in sentiment
+
+These factors are then combined to create an overall risk profile.
+
+---
+
+# 🎯 Composite Risk Score
+
+The different risk dimensions are combined into a **Composite Risk Score between 0 and 100**.
+
+```text
+0 ─────────────────────────────── 100
+│                                  │
+Low Risk                       Critical Risk
+```
+
+|  Score | Risk Level  |
+| -----: | ----------- |
+|   0–25 | 🟢 Low      |
+|  26–50 | 🟡 Moderate |
+|  51–75 | 🟠 High     |
+| 76–100 | 🔴 Critical |
+
+The score provides a quick overview, while the individual risk factors explain **why** the score is high or low.
+
+This makes the system more useful than a simple buy/sell prediction.
+
+---
+
+# 🤖 AI Risk Layer
+
+The AI layer has two main responsibilities:
+
+### 1. Understand unstructured information
+
+News and cryptocurrency discussions contain information that cannot easily be represented as simple numerical values.
+
+CryptoVision uses domain-specific NLP models to extract sentiment signals from this information.
+
+### 2. Explain structured risk
+
+After the risk engine produces its results, Gemini AI converts the structured signals into an understandable risk assessment.
+
+For example:
+
+```text
+Market Risk       → High
+Liquidity Risk    → High
+Whale Risk        → Moderate
+Tokenomics Risk   → High
+Sentiment Risk    → Bearish
+```
+
+The AI can then explain the relationship between these factors and identify the major concerns.
+
+This creates an important separation:
+
+```text
+Data
+ ↓
+Analysis
+ ↓
+Risk Score
+ ↓
+AI Explanation
+```
+
+The AI is therefore not simply generating an answer from a prompt. It is working on top of the **structured analysis produced by the application**.
+
+---
+
+# 🧠 CryptoBERT
+
+CryptoVision uses **CryptoBERT (`ElKulako/cryptobert`)** for cryptocurrency-specific sentiment analysis.
+
+CryptoBERT is designed for cryptocurrency-related language and was further trained using more than **3.2 million cryptocurrency-related social media posts**.
+
+It classifies crypto-related content into:
+
+* Bullish
+* Neutral
+* Bearish
+
+The model author reports approximately **70% accuracy and F1-score** on an out-of-sample evaluation using around 200K StockTwits posts.
+
+### Reference
+
+**Hugging Face:**
+https://huggingface.co/ElKulako/cryptobert
+
+CryptoBERT contributes to the sentiment-risk component of CryptoVision.
+
+---
+
+# 📈 ModernFinBERT
+
+CryptoVision also uses **ModernFinBERT (`tabularisai/ModernFinBERT`)** for financial sentiment analysis.
+
+It is used to interpret financial and market-related text, including:
+
+* Financial news
+* Market events
+* Economic developments
+* Cryptocurrency-related financial information
+* Positive and negative financial signals
+
+Reported benchmark results include:
+
+| Metric    | Result |
+| --------- | -----: |
+| Accuracy  |    75% |
+| F1 Score  |    63% |
+| Precision |    68% |
+| Recall    |    75% |
+| ROC-AUC   |    91% |
+
+On the FIQA dataset, the model reports **80% accuracy** and **0.96 ROC-AUC**.
+
+### Reference
+
+**Hugging Face:**
+https://huggingface.co/tabularisai/ModernFinBERT
+
+---
+
+# 🤖 Gemini AI Risk Copilot
+
+Gemini acts as the **reasoning and explanation layer** of CryptoVision.
+
+The application first creates a structured risk profile.
+
+Gemini then uses that information to generate:
+
+* Risk summaries
+* Explanations
+* Scenario analysis
+* Key concerns
+* Risk factors
+* Monitoring points
+
+For example:
+
+```text
+Risk Score: 82/100
+
+Liquidity Risk     → High
+Whale Risk         → High
+Sentiment Risk     → Bearish
+Tokenomics Risk    → High
+Market Risk        → High
+```
+
+The AI can turn these signals into a structured explanation of the asset's risk profile.
+
+This makes the system more **interpretable and user-friendly**.
+
+---
+
+# 🐋 On-Chain Risk Analysis
+
+Price data alone cannot show what is happening inside a blockchain ecosystem.
+
+CryptoVision therefore considers on-chain signals such as:
+
+* Whale transactions
+* Exchange inflows
+* Exchange outflows
+* Active addresses
+* Netflows
+* Contract information
+* Blockchain activity
+
+These signals are processed alongside market data.
+
+For example:
+
+```text
+Whale Selling
+      +
+Exchange Inflow
+      +
+Low Liquidity
+      ↓
+Potential Downside Risk
+```
+
+This provides a deeper risk perspective than price analysis alone.
+
+---
+
+# 💧 Liquidity & Small-Cap Risk
+
+Small-cap and newly launched cryptocurrencies can have significantly higher risk because their prices can move sharply with relatively small amounts of capital.
+
+CryptoVision analyzes factors such as:
+
+* Liquidity
+* Trading volume
+* Market capitalization
+* Fully diluted valuation
+* Volume changes
+* DEX activity
+* New token activity
+
+A useful risk pattern is:
+
+```text
+High Hype
+    +
+Low Liquidity
+    +
+High Whale Concentration
+    ↓
+Potentially High Risk
+```
+
+This is especially important for users exploring new or less-established cryptocurrencies.
+
+---
+
+# 🏦 DeFi Risk Analysis
+
+CryptoVision also extends its analysis to the decentralized finance ecosystem.
+
+It uses DeFi information such as:
+
+* Total Value Locked
+* Protocol activity
+* Blockchain networks
+* DEX activity
+* Stablecoin data
+* Fees
+* Yield information
+
+This helps users understand not only individual token risk, but also the health and activity of the ecosystem around it.
+
+---
+
+# 💼 Portfolio Risk Management
+
+Risk also exists at the portfolio level.
+
+Holding several cryptocurrencies does not automatically mean that a portfolio is diversified.
+
+If multiple assets are highly correlated, they can fall together during a market downturn.
+
+CryptoVision therefore analyzes:
+
+* Asset allocation
+* Concentration
+* Portfolio exposure
+* Correlation
+* Downside scenarios
+* Diversification
+
+The goal is to move from:
+
+> **"What is the risk of this coin?"**
+
+to:
+
+> **"What is the risk of my overall portfolio?"**
+
+---
+
+# 🚨 Risk Monitoring
+
+Risk is not static.
+
+A cryptocurrency that has a moderate risk score today may become high risk tomorrow because of:
+
+* Sudden volatility
+* Liquidity changes
+* Whale movements
+* Negative news
+* Sentiment changes
+* Token unlocks
+* Market-wide events
+
+CryptoVision is designed to support continuous risk monitoring by recalculating and presenting changing risk signals.
+
+This creates the foundation for a **real-time risk management system** rather than a one-time prediction tool.
+
+---
+
+# 🔎 Example
+
+Consider a newly launched cryptocurrency that has increased by 150%.
+
+A normal market application might show:
+
+```text
+Price       +150%
+Volume      High
+Trend       Bullish
+```
+
+CryptoVision goes further:
+
+```text
+Market Momentum       → High
+Liquidity             → Low
+Whale Concentration   → High
+Social Sentiment      → Very Bullish
+Tokenomics Risk       → High
+News Risk             → Medium
+On-Chain Risk         → High
+                         ↓
+                  Risk Score: 82
+                         ↓
+                  CRITICAL RISK
+```
+
+The important insight is that **positive momentum does not automatically mean low risk**.
+
+CryptoVision identifies the underlying risk factors and provides an explanation of what could happen if those risks materialize.
+
+---
+
+# 🧩 System Architecture
+
+```text
+                        CRYPTOVISION
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   DATA COLLECTION   │
+                  └──────────┬──────────┘
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+          ▼                  ▼                  ▼
+       Market            On-Chain             DeFi
+        Data               Data               Data
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │   DATA PROCESSING   │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │  RISK FEATURES      │
+                  │  & INDICATORS       │
+                  └──────────┬──────────┘
+                             │
+                 ┌───────────┴───────────┐
+                 │                       │
+                 ▼                       ▼
+          Quantitative              AI / NLP
+          Risk Analysis             Analysis
+                 │                       │
+                 │              ┌────────┴────────┐
+                 │              │                 │
+                 │         CryptoBERT      ModernFinBERT
+                 │              │                 │
+                 └──────────────┴─────────┬───────┘
+                                          │
+                                          ▼
+                               ┌──────────────────┐
+                               │   RISK ENGINE    │
+                               └────────┬─────────┘
+                                        │
+                                        ▼
+                               Composite Risk Score
+                                        │
+                                        ▼
+                                  Gemini AI
+                                        │
+                         ┌──────────────┴──────────────┐
+                         │                             │
+                         ▼                             ▼
+                  Risk Explanation              Risk Scenarios
+                         │                             │
+                         └──────────────┬──────────────┘
+                                        │
+                                        ▼
+                                USER DASHBOARD
+```
+
+---
+
+# ⚙️ Technology Stack
+
+| Layer           | Technology              |
+| --------------- | ----------------------- |
+| Frontend        | Next.js 14              |
+| UI              | React 18                |
+| Language        | TypeScript              |
+| Styling         | Tailwind CSS            |
+| Animations      | Framer Motion           |
+| Charts          | Recharts                |
+| Data Management | TanStack React Query    |
+| AI Reasoning    | Google Gemini           |
+| Crypto NLP      | CryptoBERT              |
+| Financial NLP   | ModernFinBERT           |
+| Market Data     | Binance                 |
+| DEX Data        | DexScreener             |
+| Crypto Data     | CoinGecko               |
+| DeFi Data       | DeFiLlama               |
+| Backend         | Next.js API Routes      |
+| Database        | PostgreSQL              |
+| Cache           | Redis                   |
+| Infrastructure  | Docker / Docker Compose |
+| Icons           | Lucide React            |
+
+---
+
+# 🌐 Data Sources
+
+CryptoVision uses multiple specialized data sources rather than depending on a single provider.
+
+### Binance
+
+Market and trading information.
+
+https://www.binance.com/
+
+### CoinGecko
+
+Cryptocurrency market and asset information.
+
+https://www.coingecko.com/
+
+### DexScreener
+
+DEX pairs, liquidity, volume and token discovery.
+
+https://dexscreener.com/
+
+### DeFiLlama
+
+DeFi protocols, chains, TVL and ecosystem information.
+
+https://defillama.com/
+
+### Hugging Face
+
+AI and NLP model infrastructure.
+
+https://huggingface.co/
+
+### Google Gemini
+
+AI reasoning and natural-language risk explanation.
+
+https://ai.google.dev/
+
+---
+
+# 📊 What Makes CryptoVision Different?
+
+CryptoVision is not designed as a collection of API calls displayed on a dashboard.
+
+The external data sources provide the **raw information**.
+
+The application provides the **intelligence layer**.
+
+```text
+External Data
+     ↓
+Data Processing
+     ↓
+Feature Extraction
+     ↓
+Risk Indicators
+     ↓
+Multi-Factor Risk Engine
+     ↓
+Composite Risk Score
+     ↓
+AI Reasoning
+     ↓
+Risk Explanation
+```
+
+This architecture allows additional data sources and analytical models to be added without changing the fundamental risk-management framework.
+
+The main value of CryptoVision is therefore the **way different signals are combined, analyzed and translated into risk intelligence**.
+
+---
+
+# 🔬 Model Effectiveness
+
+The AI components of CryptoVision use publicly available models with documented evaluation results.
+
+### CryptoBERT
+
+* Cryptocurrency-specific NLP model
+* Trained further on 3.2M+ crypto-related social media posts
+* Approximately 70% reported accuracy/F1 on the author's out-of-sample StockTwits evaluation
+
+### ModernFinBERT
+
+* Financial-domain sentiment model
+* 75% reported average accuracy across listed benchmarks
+* 91% reported average ROC-AUC
+* 80% accuracy and 0.96 ROC-AUC reported on FIQA
+
+These models are used as **components of the overall risk pipeline**, not as guaranteed cryptocurrency price predictors.
+
+---
+
+# 🏗️ Project Scope
+
+CryptoVision is designed as a foundation for a broader **AI-driven financial risk management platform**.
+
+The current system focuses on cryptocurrency because crypto markets provide a challenging environment with:
+
+* High volatility
+* Large amounts of real-time data
+* Rapidly changing sentiment
+* On-chain transparency
+* High liquidity differences
+* Significant speculative activity
+
+The same architecture can be extended beyond individual cryptocurrencies.
+
+### Current Scope
+
+```text
+Asset Risk
+    ↓
+Market Risk
+    ↓
+Liquidity Risk
+    ↓
+On-Chain Risk
+    ↓
+Sentiment Risk
+    ↓
+Tokenomics Risk
+    ↓
+Portfolio Risk
+```
+
+### Future Scope
+
+The platform can evolve towards:
+
+#### 1. Advanced Portfolio Risk
+
+Implement models such as:
+
+* Value at Risk (VaR)
+* Conditional Value at Risk
+* Monte Carlo simulations
+* Portfolio stress testing
+
+This would allow users to estimate potential portfolio losses under different market conditions.
+
+#### 2. Smart Contract Risk
+
+Future versions can integrate smart-contract analysis to identify:
+
+* Vulnerable contracts
+* Suspicious permissions
+* Centralization risks
+* Contract ownership risks
+* Potential exploit indicators
+
+#### 3. Rug-Pull Detection
+
+The existing combination of liquidity, holder, whale and tokenomics signals can be extended into a dedicated **early rug-pull detection system**.
+
+The system could identify patterns such as:
+
+```text
+Liquidity Removal
+      +
+Whale Selling
+      +
+Holder Concentration
+      +
+Abnormal Volume
+      ↓
+Potential Rug-Pull Risk
+```
+
+#### 4. Machine Learning Anomaly Detection
+
+Historical market and on-chain data can be used to train anomaly-detection models.
+
+These models could identify unusual:
+
+* Price movements
+* Volume
+* Wallet activity
+* Liquidity changes
+* Exchange flows
+
+before they become obvious to users.
+
+#### 5. Personalized Risk Profiles
+
+Different users have different risk tolerances.
+
+Future versions can create personalized risk assessments based on:
+
+* Investment horizon
+* Portfolio composition
+* Risk tolerance
+* Asset exposure
+* Historical behavior
+
+The system could then provide **user-specific risk warnings**.
+
+#### 6. Risk Forecasting
+
+Historical risk scores can be stored and analyzed to identify patterns in how risk changes over time.
+
+This could enable:
+
+* Risk trend prediction
+* Early-warning systems
+* Risk score forecasting
+* Historical backtesting
+
+#### 7. Cross-Chain Risk Intelligence
+
+The architecture can be extended across multiple blockchain networks to provide a unified risk view across ecosystems.
+
+---
+
+# 🔮 Long-Term Vision
+
+The long-term goal is to evolve CryptoVision from a cryptocurrency analysis platform into an **AI-powered financial risk intelligence system**.
+
+```text
+              CRYPTOVISION
+                   │
+       ┌───────────┼───────────┐
+       │           │           │
+      Asset     Portfolio    Protocol
+       Risk        Risk        Risk
+       │           │           │
+       └───────────┼───────────┘
+                   │
+             AI Risk Engine
+                   │
+                   ▼
+            Early Warning
+                   │
+                   ▼
+           Risk Mitigation
+```
+
+The platform can eventually support institutions, traders, portfolio managers and individual users by providing a single intelligence layer for identifying and managing financial risk.
+
+---
+
+# 🏁 Why CryptoVision Matters
+
+Crypto markets already provide users with enormous amounts of information.
+
+The challenge is turning that information into **meaningful risk intelligence**.
+
+CryptoVision addresses this challenge by combining:
+
+**Real-Time Data**
+
+*
+
+**Quantitative Risk Analysis**
+
+*
+
+**On-Chain Intelligence**
+
+*
+
+**Domain-Specific NLP**
+
+*
+
+**Generative AI**
+
+into a single risk-management workflow.
+
+The platform moves the user from:
+
+> **"The price is going up."**
+
+to:
+
+> **"The price is going up, but what risks are hidden behind that movement?"**
+
+That is the core idea behind CryptoVision.
+
+### 🛡️ CryptoVision
+
+**Understand the Risk. Make Better Decisions.**
+
+---
+
+# 📚 References
+
+### AI Models
+
+**CryptoBERT — ElKulako**
+https://huggingface.co/ElKulako/cryptobert
+
+**ModernFinBERT — tabularisai**
+https://huggingface.co/tabularisai/ModernFinBERT
+
+### Data & AI Platforms
+
+**Binance**
+https://www.binance.com/
+
+**CoinGecko**
+https://www.coingecko.com/
+
+**DexScreener**
+https://dexscreener.com/
+
+**DeFiLlama**
+https://defillama.com/
+
+**Hugging Face**
+https://huggingface.co/
+
+**Google Gemini**
+https://ai.google.dev/
+
+---
+
+# ⚠️ Disclaimer
+
+CryptoVision is a hackathon and research project designed for financial risk intelligence and decision support.
+
+It does not provide financial advice, guarantee returns, or guarantee the future performance of any cryptocurrency.
+
+Users should conduct their own research and consider their individual risk tolerance before making financial decisions.

@@ -30,6 +30,7 @@ import {
 import { TradingViewAdvancedWidget } from "@/components/charts/TradingViewAdvancedWidget";
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
 import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartModal";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 import Link from "next/link";
 
 interface RealtimeCryptoRadarProps {
@@ -370,14 +371,22 @@ export function RealtimeCryptoRadar({
                       style={{ left: `${left}%`, top: `${top}%` }}
                       title={`${c.name} (${c.symbol.toUpperCase()}): $${live.price?.toLocaleString()} (${chg >= 0 ? "+" : ""}${chg.toFixed(1)}%)`}
                     >
-                      <span
-                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                          isCoinUp ? "bg-emerald-400" : "bg-rose-400"
-                        }`}
+                      <CryptoAvatar
+                        coinId={c.coin_id}
+                        symbol={c.symbol}
+                        name={c.name}
+                        imageUrl={c.image_url}
+                        size="xs"
+                        className="w-4 h-4 shadow-sm"
                       />
                       <span className="text-[10px] font-bold font-mono uppercase">
                         {c.symbol?.slice(0, 4)}
                       </span>
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                          isCoinUp ? "bg-emerald-400" : "bg-rose-400"
+                        }`}
+                      />
                     </button>
                   );
                 })}
@@ -409,17 +418,14 @@ export function RealtimeCryptoRadar({
                 {/* Header of selected target */}
                 <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                   <div className="flex items-center gap-3">
-                    {currentSelected.image_url ? (
-                      <img
-                        src={currentSelected.image_url}
-                        alt={currentSelected.name}
-                        className="w-11 h-11 rounded-full p-0.5 bg-slate-900 border border-slate-700"
-                      />
-                    ) : (
-                      <div className="w-11 h-11 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center font-bold text-blue-400">
-                        {currentSelected.symbol?.slice(0, 3).toUpperCase()}
-                      </div>
-                    )}
+                    <CryptoAvatar
+                      coinId={currentSelected.coin_id}
+                      symbol={currentSelected.symbol}
+                      name={currentSelected.name}
+                      imageUrl={currentSelected.image_url}
+                      size="lg"
+                      className="w-11 h-11 border border-slate-700 shadow-md"
+                    />
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-lg font-black text-white">{currentSelected.name}</h3>
@@ -546,7 +552,14 @@ export function RealtimeCryptoRadar({
                           className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between hover:border-emerald-500/40 transition cursor-pointer"
                         >
                           <div className="flex items-center gap-2">
-                            {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 rounded-full" />}
+                            <CryptoAvatar
+                              coinId={c.coin_id}
+                              symbol={c.symbol}
+                              name={c.name}
+                              imageUrl={c.image_url}
+                              size="sm"
+                              className="w-5 h-5"
+                            />
                             <div>
                               <span className="text-xs font-bold text-white">{c.name}</span>
                               <span className="text-[10px] text-slate-400 font-mono ml-1">({c.symbol?.toUpperCase()})</span>
@@ -584,7 +597,14 @@ export function RealtimeCryptoRadar({
                           className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between hover:border-blue-500/40 transition cursor-pointer"
                         >
                           <div className="flex items-center gap-2">
-                            {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 rounded-full" />}
+                            <CryptoAvatar
+                              coinId={c.coin_id}
+                              symbol={c.symbol}
+                              name={c.name}
+                              imageUrl={c.image_url}
+                              size="sm"
+                              className="w-5 h-5"
+                            />
                             <div>
                               <span className="text-xs font-bold text-white">{c.name}</span>
                               <span className="text-[10px] text-slate-400 font-mono ml-1">({c.symbol?.toUpperCase()})</span>
@@ -618,7 +638,14 @@ export function RealtimeCryptoRadar({
                         className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between hover:border-amber-500/40 transition cursor-pointer"
                       >
                         <div className="flex items-center gap-2">
-                          {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 rounded-full" />}
+                          <CryptoAvatar
+                            coinId={c.coin_id}
+                            symbol={c.symbol}
+                            name={c.name}
+                            imageUrl={c.image_url}
+                            size="sm"
+                            className="w-5 h-5"
+                          />
                           <div>
                             <span className="text-xs font-bold text-white">{c.name}</span>
                             <span className="text-[10px] text-slate-400 font-mono ml-1">({c.symbol?.toUpperCase()})</span>
@@ -714,7 +741,14 @@ export function RealtimeCryptoRadar({
                       className="p-3 rounded-xl bg-slate-950/80 border border-rose-500/20 flex items-center justify-between hover:bg-slate-900 transition cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
-                        {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 rounded-full" />}
+                        <CryptoAvatar
+                          coinId={c.coin_id}
+                          symbol={c.symbol}
+                          name={c.name}
+                          imageUrl={c.image_url}
+                          size="sm"
+                          className="w-5 h-5"
+                        />
                         <span className="font-bold text-white">{c.name}</span>
                         <span className="text-[10px] text-slate-400 font-mono">({c.symbol?.toUpperCase()})</span>
                       </div>
@@ -741,7 +775,14 @@ export function RealtimeCryptoRadar({
                     className="p-3 rounded-xl bg-slate-950/80 border border-emerald-500/20 flex items-center justify-between hover:bg-slate-900 transition cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
-                      {c.image_url && <img src={c.image_url} alt="" className="w-5 h-5 rounded-full" />}
+                      <CryptoAvatar
+                        coinId={c.coin_id}
+                        symbol={c.symbol}
+                        name={c.name}
+                        imageUrl={c.image_url}
+                        size="sm"
+                        className="w-5 h-5"
+                      />
                       <span className="font-bold text-white">{c.name}</span>
                       <span className="text-[10px] text-slate-400 font-mono">({c.symbol?.toUpperCase()})</span>
                     </div>
@@ -778,13 +819,14 @@ export function RealtimeCryptoRadar({
                         : "bg-slate-900/90 border-slate-800 text-slate-300 hover:bg-slate-800"
                     }`}
                   >
-                    {c.image_url ? (
-                      <img src={c.image_url} alt="" className="w-4 h-4 rounded-full" />
-                    ) : (
-                      <div className="w-4 h-4 rounded-full bg-blue-500/20 font-bold text-[8px] text-blue-400 flex items-center justify-center">
-                        {c.symbol?.slice(0, 2).toUpperCase()}
-                      </div>
-                    )}
+                    <CryptoAvatar
+                      coinId={c.coin_id}
+                      symbol={c.symbol}
+                      name={c.name}
+                      imageUrl={c.image_url}
+                      size="xs"
+                      className="w-4 h-4"
+                    />
                     <span className="text-xs font-bold">{c.symbol?.toUpperCase()}</span>
                     <span className={`text-[10px] font-mono font-bold ${isItemUp ? "text-emerald-400" : "text-rose-400"}`}>
                       {isItemUp ? "+" : ""}{(live.change24h ?? c.price_change_24h).toFixed(1)}%

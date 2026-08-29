@@ -32,6 +32,7 @@ import { RealtimeCoinChartModal } from "@/components/charts/RealtimeCoinChartMod
 import { RealtimeCoinAnalysisReportModal } from "@/components/analysis/RealtimeCoinAnalysisReportModal";
 import { RealtimeCryptoRadar } from "@/components/analysis/RealtimeCryptoRadar";
 import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 import { NewsItem } from "@/types";
 
 const riskBadge = (score: number) => {
@@ -546,17 +547,14 @@ export default function DashboardPage() {
                           : "bg-[#0d1222] border-slate-800/80 text-slate-300 hover:bg-slate-800/80 hover:text-white"
                       }`}
                     >
-                      {coinItem.image_url ? (
-                        <img
-                          src={coinItem.image_url}
-                          alt={coinItem.symbol}
-                          className="w-5 h-5 rounded-full flex-shrink-0"
-                        />
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center font-bold text-[9px] text-blue-400">
-                          {coinItem.symbol?.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
+                      <CryptoAvatar
+                        coinId={coinItem.coin_id}
+                        symbol={coinItem.symbol}
+                        name={coinItem.name}
+                        imageUrl={coinItem.image_url}
+                        size="xs"
+                        className="w-5 h-5 flex-shrink-0"
+                      />
                       <div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs font-bold text-white">{coinItem.symbol?.toUpperCase()}</span>
@@ -598,17 +596,14 @@ export default function DashboardPage() {
                   {/* Top Bar for Selected Coin */}
                   <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-[#0a0f1d] border-b border-slate-800">
                     <div className="flex items-center gap-3">
-                      {activeCoin.image_url ? (
-                        <img
-                          src={activeCoin.image_url}
-                          alt={activeCoin.name}
-                          className="w-9 h-9 rounded-full border border-white/10"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center font-bold text-xs text-blue-400">
-                          {activeCoin.symbol?.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
+                      <CryptoAvatar
+                        coinId={activeCoin.coin_id}
+                        symbol={activeCoin.symbol}
+                        name={activeCoin.name}
+                        imageUrl={activeCoin.image_url}
+                        size="md"
+                        className="w-9 h-9 border border-white/10"
+                      />
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="text-base font-extrabold text-white">{activeCoin.name}</h3>
@@ -783,17 +778,14 @@ export default function DashboardPage() {
                       {/* Asset Name & Icon */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          {coin.image_url ? (
-                            <img
-                              src={coin.image_url}
-                              alt={coin.symbol}
-                              className="w-7 h-7 rounded-full border border-white/10 flex-shrink-0"
-                            />
-                          ) : (
-                            <div className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-300">
-                              {coin.symbol?.slice(0, 2).toUpperCase()}
-                            </div>
-                          )}
+                          <CryptoAvatar
+                            coinId={coin.coin_id}
+                            symbol={coin.symbol}
+                            name={coin.name}
+                            imageUrl={coin.image_url}
+                            size="md"
+                            className="w-7 h-7 flex-shrink-0"
+                          />
                           <div>
                             <p className="text-white font-bold text-xs sm:text-sm group-hover:text-blue-400 transition">
                               {coin.name}

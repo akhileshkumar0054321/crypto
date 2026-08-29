@@ -28,6 +28,7 @@ import {
 import Link from "next/link";
 import { useLiveMarket } from "@/lib/context/LiveMarketContext";
 import { TradingViewAdvancedWidget, resolveTradingViewSymbol } from "@/components/charts/TradingViewAdvancedWidget";
+import { CryptoAvatar } from "@/components/ui/CryptoAvatar";
 
 export interface ChartModalProps {
   coin: {
@@ -464,17 +465,14 @@ export function RealtimeCoinChartModal({ coin, onClose }: ChartModalProps) {
         {/* ── Top Header & Live Recording Banner ─────────────────────────────── */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3 border-b border-white/[0.08] bg-slate-900/90">
           <div className="flex items-center gap-3">
-            {coin.image_url ? (
-              <img
-                src={coin.image_url}
-                alt={coin.name}
-                className="w-8 h-8 rounded-full border border-white/10 flex-shrink-0"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0">
-                {coin.symbol.slice(0, 2).toUpperCase()}
-              </div>
-            )}
+            <CryptoAvatar
+              coinId={coin.coin_id}
+              symbol={coin.symbol}
+              name={coin.name}
+              imageUrl={coin.image_url}
+              size="md"
+              className="w-8 h-8 flex-shrink-0"
+            />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-base font-extrabold tracking-tight text-white">{coin.name}</h2>

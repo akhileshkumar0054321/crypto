@@ -52,6 +52,10 @@ export function NewsImpactModal({ item, onClose }: NewsImpactModalProps) {
             <img
               src={item.image_url}
               alt={item.title}
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = "none";
+              }}
               className="w-full h-full object-cover"
             />
           ) : (
